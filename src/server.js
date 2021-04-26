@@ -16,10 +16,6 @@ const config = {
 }
 module.exports.server = async () => {
     try {
-        console.log(config.database)
-        console.log(config.host)
-        console.log(config.user)
-        console.log(config.password)
         await mysql.connect()
         let results = await mysql.query(
             'SELECT message FROM run_events.test WHERE id>0'

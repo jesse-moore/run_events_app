@@ -1,6 +1,6 @@
 'use strict';
 
-const app = require('../../');
+const app = require('../../index');
 const chai = require('chai');
 const expect = chai.expect;
 var event, context;

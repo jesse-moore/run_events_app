@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "graphql-api",
     "main": "index.js",
-    "repository": "https://github.com/jesse-moore/run_events.git",
+    "repository": "https://github.com/jesse-moore/run_events_server.git",
     "author": "Jesse Moore",
     "license": "MIT",
     "dependencies": {

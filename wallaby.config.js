@@ -1,8 +1,8 @@
 module.exports = function (wallaby) {
     return {
-        files: ['src/**/*.*'],
+        files: ['src/**/*.*', './index.js'],
 
-        tests: ['tests/unit_tests/**/*test.js'],
+        tests: ['tests/unit/**/*test.js'],
         env: {
             type: 'node',
             runner: 'node',
