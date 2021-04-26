@@ -1,0 +1,25 @@
+{
+    "name": "graphql-api",
+    "version": "1.0.0",
+    "description": "graphql-api",
+    "main": "index.js",
+    "repository": "https://github.com/jesse-moore/run_events.git",
+    "author": "Jesse Moore",
+    "license": "MIT",
+    "dependencies": {
+        "serverless-mysql": "^1.5.4"
+    },
+    "scripts": {
+        "test": "mocha tests/unit/",
+        "dev": "npm run sam:remove-build && npm run sam:start-api",
+		"sam:remove-build": "rm -rf .aws-build",
+        "sam:start-api": "'C:\\Program Files\\Amazon\\AWSSAMCLI\\bin\\sam.cmd' local start-api -n ./.env.dev.json"
+    },
+    "bin": {
+        "sam": "node_modules/.bin/sam"
+    },
+    "devDependencies": {
+        "chai": "^4.2.0",
+        "mocha": "^8.2.1"
+    }
+}
