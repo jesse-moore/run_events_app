@@ -56,9 +56,11 @@ node_modules/
 jspm_packages/
 
 # Environment
-.env.prod
-.env.dev
+samconfig.toml
 .env.dev.json
+
+# Build
+.aws-sam
 
 # Typescript v1 declaration files
 typings/
