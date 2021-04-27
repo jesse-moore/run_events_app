@@ -1,4 +1,4 @@
-const { server } = require('./src/server')
+const server = require('./src/server')
 let response
 
 /**
@@ -16,7 +16,7 @@ let response
 
 exports.lambdaHandler = async (event, context) => {
     try {
-        const result = await server()
+        const result = await server.server()
         response = {
             statusCode: 200,
             body: result[0].message,

@@ -6,20 +6,17 @@ const mysql = require('serverless-mysql')({
         user: process.env.USERNAME,
         password: process.env.PASSWORD,
     },
+	onConnectError: (error) =>{
+		console.log(error)
+		return
+	}
 })
-
-const config = {
-    host: process.env.ENDPOINT,
-    database: process.env.DATABASE,
-    user: process.env.USERNAME,
-    password: process.env.PASSWORD,
-}
 module.exports.server = async () => {
     try {
-        await mysql.connect()
         let results = await mysql.query(
-            'SELECT message FROM run_events.test WHERE id>0'
+            'SELECT message FROM test WHERE id>0'
         )
+		console.log(results)
         return results
     } catch (error) {
         console.log(error)
