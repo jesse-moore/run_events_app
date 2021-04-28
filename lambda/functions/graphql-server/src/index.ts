@@ -1,5 +1,4 @@
-const server = require('./src/server')
-let response
+import { server } from './graphql';
 
 /**
  *
@@ -14,22 +13,4 @@ let response
  *
  */
 
-exports.lambdaHandler = async (event, context) => {
-    try {
-        const result = await server.server()
-        response = {
-            statusCode: 200,
-            body: result[0].message,
-            headers: {
-                'Content-Type': 'text/html',
-                'Access-Control-Allow-Methods': '*',
-                'Access-Control-Allow-Origin': '*'
-            }
-        }
-    } catch (err) {
-        console.log(err)
-        return err
-    }
-
-    return response
-}
+exports.server = server;

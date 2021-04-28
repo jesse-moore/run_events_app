@@ -24,12 +24,17 @@ Parameters:
     Default: password
     Description: Database password
     Type: String
+
+# Resources declares the AWS resources that you want to include in the stack
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
 Resources:
   GraphQLFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: ./
-      Handler: index.lambdaHandler
+      Handler: dist/src/index.server
+      CodeUri: functions/graphql-server
+      Layers:
+        - !Ref GlobalDependenciesLayer
       Runtime: nodejs14.x
       Events:
         GraphQL:
@@ -37,23 +42,32 @@ Resources:
           Properties:
             Path: /api
             Method: get
+        Api1:
+          Type: Api
+          Properties:
+            Path: /api
+            Method: POST
       Environment:
         Variables:
           DATABASE: !Ref DATABASE
           ENDPOINT: !Ref ENDPOINT
           USERNAME: !Ref USERNAME
           PASSWORD: !Ref PASSWORD
+  GlobalDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: GlobalDependenciesLayer
+      ContentUri: layers/global-dependencies
+      CompatibleRuntimes:
+        - nodejs14.x
+      RetentionPolicy: Retain
+    Metadata:
+      BuildMethod: nodejs14.x
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  GraphQLApi:
+  WebEndpoint:
     Description: "API Gateway endpoint URL for Prod stage for GraphQL function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/"
-  GraphQLFunction:
-    Description: "GraphQL Lambda Function ARN"
-    Value: !GetAtt GraphQLFunction.Arn
-  GraphQLFunctionIamRole:
-    Description: "Implicit IAM Role created for GraphQL function"
-    Value: !GetAtt GraphQLFunctionRole.Arn
