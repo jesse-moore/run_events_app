@@ -1,0 +1,9 @@
+{
+    "extends": "./lambda/functions/graphql-server/node_modules/@tsconfig/node14/tsconfig.json",
+    "compilerOptions": {
+        "sourceMap": true,
+        "moduleResolution": "node",
+        "outDir": "./lambda/functions/graphql-server/dist",
+    },
+    "include": ["lambda/functions/graphql-server/src/**/*.ts", "lambda/functions/graphql-server/src/**/*.js", "lambda/functions/graphql-server/tests/**/*.ts", "lambda/functions/graphql-server/tests/**/*.js"]
+}
