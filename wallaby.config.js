@@ -8,7 +8,7 @@ module.exports = function (wallaby) {
             },
         ],
 
-        tests: ['lambda/functions/graphql-server/tests/unit/**/*test.ts'],
+        tests: ['test/**/*test.ts'],
 
         env: {
             type: 'node',
@@ -21,15 +21,7 @@ module.exports = function (wallaby) {
                  * (no need to duplicate tsconfig.json, if you have it, it will be automatically used) */
             }),
         },
-        setup: (wallaby) => {
-            const chai = require('chai')
-            chai.should()
-            // chai.use(require('sinon-chai'))
-            // chai.use(require('chai-like'))
-            global.chai = chai
-            global.expect = require('chai').expect
-        },
-        testFramework: 'mocha',
+        testFramework: 'jest',
         filesWithNoCoverageCalculated: [],
         runMode: 'onsave',
         trace: true,
