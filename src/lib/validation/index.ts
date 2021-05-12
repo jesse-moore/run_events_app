@@ -1,94 +1,96 @@
-type InputState = {
-    value: string;
-    isValid: boolean;
-    isTouched: boolean;
-    class: string;
-    message: string | null;
-};
+interface Errors {
+    email: string[] | null
+    password: string[] | null
+    password2: string[] | null
+}
 
-export type FormState = {
-    email: InputState;
-    password: InputState;
-    password2: InputState;
-    passwordsMatch: boolean;
-    isValid: boolean;
-};
+interface FormValidationResult {
+    errors: Errors
+    isValid: boolean
+}
 
-const untouchedClass = 'border-gray-300';
-const validClass = 'border-green-500 bg-green-300 bg-opacity-30';
-const invalidClass = 'border-red-700 bg-red-300 bg-opacity-30';
+interface FormValues {
+    email: string
+    password: string
+    password2: string
+}
 
-export const inputState: InputState = {
-    value: '',
-    isValid: false,
-    isTouched: false,
-    class: untouchedClass,
-    message: null,
-};
+export const validateForm = (form: FormValues): FormValidationResult => {
+    const { email, password, password2 } = form
+    const emailErrors = validateEmail(email)
+    const passwordErrors = validatePassword(password)
+    let password2Errors = validatePassword(password2)
 
-export const validate = ({
-    target,
-    formValidity,
-}: {
-    target: HTMLInputElement;
-    formValidity: FormState;
-}): FormState => {
-    const { name, validationMessage, validity } = target;
-    const validState = {
-        isValid: true,
-        isTouched: true,
-        class: validClass,
-        message: '',
-    };
-    const invalidState = {
-        isValid: false,
-        isTouched: true,
-        class: invalidClass,
-        message: validationMessage,
-    };
-    let newFormState: typeof formValidity = Object.assign({}, formValidity);
-    let inputState: InputState = Object.getOwnPropertyDescriptor(
-        newFormState,
-        name
-    )?.value;
-    if (!inputState) return newFormState;
-    if (validity.valid) {
-        inputState = { ...inputState, ...validState };
-        newFormState = { ...newFormState, [name]: inputState };
-    } else {
-        inputState = { ...inputState, ...invalidState };
-        newFormState = { ...newFormState, [name]: inputState };
-    }
-    if (
-        newFormState.password.value !== newFormState.password2.value &&
-        newFormState.password.isTouched &&
-        newFormState.password2.isTouched
-    ) {
-        newFormState.passwordsMatch = false;
-        newFormState.password.class = invalidClass;
-        newFormState.password2.class = invalidClass;
-    } else {
-        newFormState.passwordsMatch = true;
-        if (newFormState.password.isValid) {
-            newFormState.password.class = validClass;
-        }
-        if (newFormState.password2.isValid) {
-            newFormState.password2.class = validClass;
+    if (password !== password2) {
+        if (password2Errors !== null) {
+            password2Errors?.push('Passwords do not match')
+        } else {
+            password2Errors = ['Passwords do not match']
         }
     }
-    let newIsValid = true;
-    for (const key in newFormState) {
-        if (!newFormState.passwordsMatch) {
-            newIsValid = false;
-            break;
-        }
-        const element = newFormState[key as keyof FormState];
-        if (typeof element !== 'boolean') {
-            if (!element.isValid) {
-                newIsValid = false;
-                break;
-            }
-        }
+
+    const errors = {
+        email: emailErrors,
+        password: passwordErrors,
+        password2: password2Errors,
     }
-    return { ...newFormState, isValid: newIsValid };
-};
+    const isValid = isValidForm(errors)
+    return { errors, isValid }
+}
+
+const validateEmail = (email: string): string[] | null => {
+    const errors = []
+    if (!/^[^@]+@\S*$/.test(email)) {
+        errors.push("Please include an '@' in the email address.")
+    }
+    if (!/^[^@]+@\S+$/.test(email)) {
+        errors.push("Please enter a part following '@'.")
+    }
+    if (!/^[^@]+@[^@]*$/.test(email)) {
+        errors.push("A part following '@' should not contain the symbol '@'")
+    }
+    if (!/^.+[^\.]$/.test(email)) {
+        errors.push("Email address cannot end with a '.'")
+    }
+    if (errors.length > 0) return errors
+    if (!/^[^@]+@\w+(\.\w+)+\w$/.test(email)) {
+        errors.push('Invalid email address')
+        return errors
+    }
+    return null
+}
+
+export const validatePassword = (password: string): string[] | null => {
+    const errors = []
+    const passordLength = password.length >= 8
+    const specialRegex = /([=+\-^$*.[\]{}()?"!@#%&/\\,><':;|_~`])/
+    const passwordSpecial = specialRegex.test(password)
+    const passwordUpper = /[A-Z]/.test(password)
+    const passwordLower = /[a-z]/.test(password)
+    const passwordNumber = /[0-9]/.test(password)
+
+    if (!passordLength) {
+        errors.push('Password must be at least 8 characters long.')
+    }
+    if (!passwordSpecial) {
+        errors.push('Password must contain a special character')
+    }
+    if (!passwordUpper) {
+        errors.push('Password must contain an uppercase character')
+    }
+    if (!passwordLower) {
+        errors.push('Password must contain a lowercase character')
+    }
+    if (!passwordNumber) {
+        errors.push('Password must contain a number')
+    }
+
+    return errors.length ? errors : null
+}
+
+export const isValidForm = (errors: Errors): boolean => {
+    if (errors.email !== null) return false
+    if (errors.password !== null) return false
+    if (errors.password2 !== null) return false
+    return true
+}

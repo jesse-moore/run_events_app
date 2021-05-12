@@ -38,7 +38,7 @@ export const Layout = ({
     if ((!user && authenticatedRoute) || (user && redirectAuthenticated))
         return null
     return (
-        <div>
+        <div className="relative">
             <NarBar user={user} />
             {children}
             <footer className="text-center h-24 flex justify-center items-center">
