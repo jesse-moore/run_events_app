@@ -4,22 +4,39 @@ import {
     CognitoUserAttribute,
     CognitoUserPool,
     CognitoUserSession,
+    ISignUpResult,
 } from 'amazon-cognito-identity-js'
 import { UserDataInterface } from '../../types'
 import validateJWT from './validateJWT'
 
-const poolData = {
-    UserPoolId: process.env.NEXT_PUBLIC_COGNITO_POOL_ID || '',
-    ClientId: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID || '',
+const UserPoolId =
+    process.env.NEXT_PUBLIC_COGNITO_POOL_ID || process.env.TEST_COGNITO_POOL_ID
+const ClientId =
+    process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID ||
+    process.env.TEST_COGNITO_CLIENT_ID
+if (!UserPoolId || !ClientId) throw new Error('Invailid pool data')
+
+const poolData: { UserPoolId: string; ClientId: string } = {
+    UserPoolId,
+    ClientId,
 }
 
 const UserPool = new CognitoUserPool(poolData)
 
-const signup = ({ email, password }: { email: string; password: string }) => {
+const signup = ({
+    email,
+    password,
+}: {
+    email: string
+    password: string
+}): Promise<ISignUpResult> => {
     return new Promise((resolve, reject) => {
         UserPool.signUp(email, password, [], [], (err, data) => {
             if (err) reject(err.message)
-            resolve(data)
+            if (data) {
+                resolve(data)
+            }
+            reject('Unknown Error')
         })
     })
 }
