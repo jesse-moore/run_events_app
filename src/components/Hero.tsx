@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { Button } from './Button'
-import { ButtonLink } from './ButtonLink'
+import { Button } from './Common/Button'
+import { ButtonLink } from './Common/ButtonLink'
 
 export const Hero = () => {
     const opacity = 0.6

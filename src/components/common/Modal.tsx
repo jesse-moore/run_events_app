@@ -1,4 +1,4 @@
-import { Close } from './common/Close'
+import { Close } from './Close'
 
 interface ModalProps {
     children: React.ReactNode

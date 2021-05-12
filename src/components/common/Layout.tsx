@@ -1,12 +1,12 @@
 import React, { ReactNode, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Router from 'next/router'
-import { getUser } from '../lib/cognito'
-import { RootState } from '../lib/redux/reducers'
-import { signin } from '../lib/redux/reducers/user'
-import { LoginModal } from './LoginModal'
+import { getUser } from '../../lib/cognito'
+import { RootState } from '../../lib/redux/reducers'
+import { signin } from '../../lib/redux/reducers/user'
+import { LoginModal } from '../LoginModal'
 import { NarBar } from './NarBar'
-import { SignupModal } from './SignupModal'
+import { SignupModal } from '../SignupModal'
 
 interface LayoutProps {
     children: ReactNode

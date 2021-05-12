@@ -5,11 +5,11 @@ import Router from 'next/router'
 import { signup, login, getUser } from '../../lib/cognito'
 import { toggleSignupForm } from '../../lib/redux/reducers/ui'
 import { signin } from '../../lib/redux/reducers/user'
-import { LoadingOverlay } from '../common/LoadingOverlay'
+import { LoadingOverlay } from '../Common/LoadingOverlay'
 import { SignupForm } from './SignupForm'
 import { reducer, initialState } from './reducer'
-import { Modal } from '../Modal'
-import { LoadingBar } from '../common/LoadingBar'
+import { Modal } from '../Common/Modal'
+import { LoadingBar } from '../Common/LoadingBar'
 
 export function SignupModal() {
     const dispatch = useDispatch()

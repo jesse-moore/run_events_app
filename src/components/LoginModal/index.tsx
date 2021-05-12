@@ -4,9 +4,9 @@ import { toggleLoginForm } from '../../lib/redux/reducers/ui'
 import { signin } from '../../lib/redux/reducers/user'
 import { login, getUser } from '../../lib/cognito'
 import Router from 'next/router'
-import { Modal } from '../Modal'
-import { LoadingOverlay } from '../common/LoadingOverlay'
-import { LoadingBar } from '../common/LoadingBar'
+import { Modal } from '../Common/Modal'
+import { LoadingOverlay } from '../Common/LoadingOverlay'
+import { LoadingBar } from '../Common/LoadingBar'
 import { LoginForm } from './LoginForm'
 
 export function LoginModal() {
