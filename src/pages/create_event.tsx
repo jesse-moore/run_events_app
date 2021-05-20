@@ -1,12 +1,11 @@
 import React from 'react'
-import { Layout } from '../components/Layout'
+import { Layout } from '../components/Common/Layout'
+import EventEditor from '../components/EventEditor'
 
 const Create_event = () => {
     return (
-        <Layout redirectAuthenticated={'/app'}>
-            <div>
-                <h1>Create Event</h1>
-            </div>
+        <Layout>
+            <EventEditor />
         </Layout>
     )
 }

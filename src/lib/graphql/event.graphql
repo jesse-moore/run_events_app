@@ -1,0 +1,24 @@
+mutation FileUpload($file: Upload!) {
+    fileUpload(file: $file)
+}
+
+mutation CreateEvent($event: EventInput!) {
+    createEvent(event: $event) {
+        name
+    }
+}
+
+input EventInput {
+    name: String
+    heroImg: Upload
+    date: String
+    address: String
+    city: String
+    state: String
+    time: String
+    eventDetails: String
+}
+
+input HeroImgInput {
+    file: Upload!
+}

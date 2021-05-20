@@ -7,7 +7,6 @@ import {
     ISignUpResult,
 } from 'amazon-cognito-identity-js'
 import { UserDataInterface } from '../../types'
-import validateJWT from './validateJWT'
 
 const UserPoolId =
     process.env.NEXT_PUBLIC_COGNITO_POOL_ID || process.env.TEST_COGNITO_POOL_ID
@@ -159,6 +158,5 @@ export {
     getSession,
     logout,
     getJWT,
-    validateJWT,
     getUserData,
 }

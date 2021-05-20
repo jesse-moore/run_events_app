@@ -19,9 +19,27 @@
         to bottom,
         #fafafa,
         #fafafa 50%,
-        #60A5FA 50%,
-        #60A5FA
+        #60a5fa 50%,
+        #60a5fa
     );
     background-size: 500% 10px;
     transform: rotate(-55deg);
+}
+
+.event-details div h2 {
+    color: #2a3646;
+    font-weight: 600;
+}
+
+.event-details div h3 {
+    font-weight: 600;
+}
+
+.event-details div h2 {
+    padding-top: 1rem;
+    border-top: #b6b6b6 1px dashed;
+}
+.event-details div h2:first-of-type {
+    padding-top: 0rem;
+    border: none;
 }

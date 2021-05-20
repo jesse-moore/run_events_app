@@ -1,16 +1,19 @@
-import { Close } from './Close'
+import { ReactEventHandler } from 'react'
+import { Button } from './Button'
 
 interface ModalProps {
-    children: React.ReactNode
+    children?: React.ReactNode
     title: string
     closeHandler: React.MouseEventHandler<HTMLDivElement>
+    confirmHandler: React.MouseEventHandler<HTMLDivElement>
     loadingOverlay?: React.ReactNode
 }
 
-export function Modal({
-    children,
+export function DialogModal({
+    children = null,
     title,
     closeHandler,
+    confirmHandler,
     loadingOverlay = null,
 }: ModalProps) {
     return (
@@ -23,11 +26,20 @@ export function Modal({
                         <div className="text-center text-3xl col-start-2 whitespace-nowrap">
                             {title}
                         </div>
-                        <div className="ml-auto">
-                            <Close onClick={closeHandler} />
-                        </div>
                     </div>
                     {children}
+                    <div className="flex flex-row justify-center mb-6">
+                        <Button
+                            name="Discard Changes"
+                            type="red"
+                            onClick={confirmHandler}
+                        />
+                        <Button
+                            name="Cancel"
+                            type="blue"
+                            onClick={closeHandler}
+                        />
+                    </div>
                 </div>
             </div>
         </div>

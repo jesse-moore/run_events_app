@@ -1,25 +1,23 @@
-import React from 'react';
-import SimpleMDE from 'react-simplemde-editor';
-import 'easymde/dist/easymde.min.css';
-import { EventActionInterface } from '../../types';
+import React, { ChangeEventHandler } from 'react'
+import dynamic from 'next/dynamic'
+const SimpleMDE = dynamic(() => import('react-simplemde-editor'), {
+    ssr: false,
+})
+import 'easymde/dist/easymde.min.css'
+import { EventActionInterface } from '../../types'
 
 interface EventDetailsProps {
-    value: string;
-    dispatch: React.Dispatch<EventActionInterface>;
+    value: string
+    handleChange: any
 }
 
-export const EventDetailsInput = ({ value, dispatch }: EventDetailsProps) => {
+export const EventDetailsInput = ({
+    value,
+    handleChange,
+}: EventDetailsProps) => {
     return (
         <div>
-            <SimpleMDE
-                onChange={(value) =>
-                    dispatch({
-                        type: 'updateEventDetails',
-                        payload: value,
-                    })
-                }
-                value={value}
-            />
+            <SimpleMDE onChange={handleChange} value={value} />
         </div>
-    );
-};
+    )
+}

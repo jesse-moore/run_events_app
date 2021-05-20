@@ -1,5 +1,5 @@
 import React from 'react'
-import { Layout } from '../components/Layout'
+import { Layout } from '../components/Common/Layout'
 import { Hero } from '../components/Hero'
 import { FeatureSection } from '../components/FeatureSection'
 import { Feature } from '../components/Feature'
