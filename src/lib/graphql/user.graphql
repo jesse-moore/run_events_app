@@ -1,10 +1,5 @@
-query User {
-    user {
-        id
+mutation CreateUser {
+    createUser {
         email
     }
-}
-
-mutation CreateUser {
-    createUser
 }

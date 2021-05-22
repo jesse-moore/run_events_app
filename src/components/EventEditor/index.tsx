@@ -92,12 +92,13 @@ const EventEditor = () => {
     };
 
     const handlePublish = async () => {
-        const { file } = eventState.heroImg;
-        console.log(file);
-        // const res = await createEvent({
-        //     variables: { event: { ...eventState, heroImg: file } },
-        // });
-        // console.log(res.errors);
+        const { date, time, heroImg, ...rest } = eventState;
+        const dateTime = new Date(`${date} ${time}`).toUTCString();
+        const { file } = heroImg;
+        const res = await createEvent({
+            variables: { event: { ...rest, heroImg: file, dateTime } },
+        });
+        console.log('PUBLISH ERRORS: ', res.errors);
     };
 
     return (

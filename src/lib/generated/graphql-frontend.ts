@@ -12,48 +12,41 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  Date: any;
   /** The `Upload` scalar type represents a file upload. */
   Upload: any;
 };
 
+
 export type Event = {
   __typename?: 'Event';
+  id?: Maybe<Scalars['ID']>;
   name?: Maybe<Scalars['String']>;
-  heroImg?: Maybe<HeroImg>;
-  date?: Maybe<Scalars['String']>;
+  heroImg?: Maybe<Scalars['String']>;
+  dateTime?: Maybe<Scalars['Date']>;
   address?: Maybe<Scalars['String']>;
   city?: Maybe<Scalars['String']>;
   state?: Maybe<Scalars['String']>;
-  time?: Maybe<Scalars['String']>;
   eventDetails?: Maybe<Scalars['String']>;
+  races?: Maybe<Array<Maybe<Race>>>;
 };
 
 export type EventInput = {
-  name?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
   heroImg?: Maybe<Scalars['Upload']>;
-  date?: Maybe<Scalars['String']>;
+  dateTime: Scalars['String'];
+  utcOffset?: Maybe<Scalars['Int']>;
   address?: Maybe<Scalars['String']>;
   city?: Maybe<Scalars['String']>;
   state?: Maybe<Scalars['String']>;
-  time?: Maybe<Scalars['String']>;
   eventDetails?: Maybe<Scalars['String']>;
-};
-
-export type HeroImg = {
-  __typename?: 'HeroImg';
-  src?: Maybe<Scalars['String']>;
-  name?: Maybe<Scalars['String']>;
-  size?: Maybe<Scalars['Int']>;
-};
-
-export type HeroImgInput = {
-  file: Scalars['Upload'];
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createUser?: Maybe<Scalars['String']>;
+  createUser?: Maybe<User>;
   createEvent?: Maybe<Event>;
+  createRace?: Maybe<Race>;
   fileUpload?: Maybe<Scalars['String']>;
 };
 
@@ -63,21 +56,47 @@ export type MutationCreateEventArgs = {
 };
 
 
+export type MutationCreateRaceArgs = {
+  eventId?: Maybe<Scalars['String']>;
+  race?: Maybe<RaceInput>;
+};
+
+
 export type MutationFileUploadArgs = {
   file: Scalars['Upload'];
 };
 
 export type Query = {
   __typename?: 'Query';
-  user?: Maybe<User>;
   events: Array<Maybe<Event>>;
+  eventBySlug?: Maybe<Event>;
   userEvents: Array<Maybe<Event>>;
+};
+
+
+export type QueryEventBySlugArgs = {
+  slug: Scalars['String'];
+};
+
+export type Race = {
+  __typename?: 'Race';
+  type?: Maybe<Scalars['String']>;
+  dateTime?: Maybe<Scalars['Date']>;
+  distance?: Maybe<Scalars['Int']>;
+  route?: Maybe<Scalars['String']>;
+};
+
+export type RaceInput = {
+  type?: Maybe<Scalars['String']>;
+  dateTime?: Maybe<Scalars['Date']>;
+  distance?: Maybe<Scalars['Int']>;
+  route?: Maybe<Scalars['String']>;
 };
 
 
 export type User = {
   __typename?: 'User';
-  id: Scalars['ID'];
+  id?: Maybe<Scalars['ID']>;
   email: Scalars['String'];
 };
 
@@ -104,23 +123,15 @@ export type CreateEventMutation = (
   )> }
 );
 
-export type UserQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type UserQuery = (
-  { __typename?: 'Query' }
-  & { user?: Maybe<(
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'email'>
-  )> }
-);
-
 export type CreateUserMutationVariables = Exact<{ [key: string]: never; }>;
 
 
 export type CreateUserMutation = (
   { __typename?: 'Mutation' }
-  & Pick<Mutation, 'createUser'>
+  & { createUser?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'email'>
+  )> }
 );
 
 
@@ -188,44 +199,11 @@ export function useCreateEventMutation(baseOptions?: Apollo.MutationHookOptions<
 export type CreateEventMutationHookResult = ReturnType<typeof useCreateEventMutation>;
 export type CreateEventMutationResult = Apollo.MutationResult<CreateEventMutation>;
 export type CreateEventMutationOptions = Apollo.BaseMutationOptions<CreateEventMutation, CreateEventMutationVariables>;
-export const UserDocument = gql`
-    query User {
-  user {
-    id
-    email
-  }
-}
-    `;
-
-/**
- * __useUserQuery__
- *
- * To run a query within a React component, call `useUserQuery` and pass it any options that fit your needs.
- * When your component renders, `useUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useUserQuery({
- *   variables: {
- *   },
- * });
- */
-export function useUserQuery(baseOptions?: Apollo.QueryHookOptions<UserQuery, UserQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<UserQuery, UserQueryVariables>(UserDocument, options);
-      }
-export function useUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UserQuery, UserQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<UserQuery, UserQueryVariables>(UserDocument, options);
-        }
-export type UserQueryHookResult = ReturnType<typeof useUserQuery>;
-export type UserLazyQueryHookResult = ReturnType<typeof useUserLazyQuery>;
-export type UserQueryResult = Apollo.QueryResult<UserQuery, UserQueryVariables>;
 export const CreateUserDocument = gql`
     mutation CreateUser {
-  createUser
+  createUser {
+    email
+  }
 }
     `;
 export type CreateUserMutationFn = Apollo.MutationFunction<CreateUserMutation, CreateUserMutationVariables>;

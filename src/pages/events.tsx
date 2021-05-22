@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { UserDocument } from '../lib/generated/graphql-frontend';
+// import { UserDocument } from '../lib/generated/graphql-frontend';
 import { initializeApollo } from '../lib/graphql/apollo';
 
 interface EventsProps {
@@ -17,17 +17,17 @@ const Events = ({ data }: EventsProps) => {
     );
 };
 
-export async function getStaticProps() {
-    const apolloClient = initializeApollo();
+// export async function getStaticProps() {
+//     const apolloClient = initializeApollo();
 
-    const { data } = await apolloClient.query({
-        query: UserDocument,
-    });
-    return {
-        props: {
-            data: data.user,
-        },
-    };
-}
+//     const { data } = await apolloClient.query({
+//         query: UserDocument,
+//     });
+//     return {
+//         props: {
+//             data: data.user,
+//         },
+//     };
+// }
 
 export default Events;

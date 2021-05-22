@@ -11,11 +11,11 @@ mutation CreateEvent($event: EventInput!) {
 input EventInput {
     name: String
     heroImg: Upload
-    date: String
+    dateTime: Date!
+    utcOffset: Int
     address: String
     city: String
     state: String
-    time: String
     eventDetails: String
 }
 
