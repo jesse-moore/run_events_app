@@ -32,11 +32,6 @@ export const MapboxMap = () => {
         setMap(newMap);
     }, []);
 
-    const handleCanvasClick = (e: MapMouseEvent & EventData) => {
-        console.log(addMarker);
-        console.log(e);
-    };
-
     useEffect(() => {
         if (!map) return;
         const pointsSrc = map.getSource('points') as GeoJSONSource;
