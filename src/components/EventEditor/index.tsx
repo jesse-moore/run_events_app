@@ -1,17 +1,16 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import { imageToDataURL, dataURLtoFile } from '../../lib/utils';
-import { useCreateEventMutation } from '../../lib/generated/graphql-frontend';
 import { reducer, init } from './reducer';
 import { EditorForm } from './EditorForm';
 import { ToolBar } from './ToolBar';
 import { DialogModal } from '../Common/DialogModal';
-import { EventInterface, HeroImg } from '../../types';
+import { EventInterface } from '../../types';
 
 const EventEditor = () => {
     const [eventState, dispatch] = useReducer(reducer, {}, init);
-    const [createEvent] = useCreateEventMutation({
-        onError: (error) => console.log(error),
-    });
+    // const [createEvent] = useCreateEventMutation({
+    //     onError: (error) => console.log(error),
+    // });
     const [discardWarning, setDiscardWarning] = useState(false);
 
     useEffect(() => {
@@ -91,15 +90,15 @@ const EventEditor = () => {
         }
     };
 
-    const handlePublish = async () => {
-        const { date, time, heroImg, ...rest } = eventState;
-        const dateTime = new Date(`${date} ${time}`).toUTCString();
-        const { file } = heroImg;
-        const res = await createEvent({
-            variables: { event: { ...rest, heroImg: file, dateTime } },
-        });
-        console.log('PUBLISH ERRORS: ', res.errors);
-    };
+    // const handlePublish = async () => {
+    //     const { date, time, heroImg, ...rest } = eventState;
+    //     const dateTime = new Date(`${date} ${time}`).toUTCString();
+    //     const { file } = heroImg;
+    //     const res = await createEvent({
+    //         variables: { event: { ...rest, heroImg: file, dateTime } },
+    //     });
+    //     console.log('PUBLISH ERRORS: ', res.errors);
+    // };
 
     return (
         <div className="bg-blueGray-100">
@@ -111,10 +110,7 @@ const EventEditor = () => {
                 />
             )}
 
-            <ToolBar
-                handleDiscard={() => handleDiscard()}
-                handlePublish={() => handlePublish()}
-            />
+            <ToolBar handleDiscard={() => handleDiscard()} />
             <EditorForm
                 {...{
                     eventState,

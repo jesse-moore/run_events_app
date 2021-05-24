@@ -43,3 +43,8 @@
     padding-top: 0rem;
     border: none;
 }
+
+.mapboxgl-map {
+	height: 100%;
+	width: 100%;
+}

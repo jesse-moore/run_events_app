@@ -1,4 +1,5 @@
 export { imageToDataURL } from './imageToDataURL';
+export { gpxToGeoJSON } from './gpxToGeoJSON';
 
 export function dataURLtoFile(dataurl: string, filename: string) {
     if (dataurl.length === 0) return null;

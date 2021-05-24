@@ -1,0 +1,242 @@
+import React, { MouseEventHandler, useEffect, useRef, useState } from 'react';
+import mapboxgl, {
+    EventData,
+    GeoJSONSource,
+    LngLat,
+    Map,
+    MapMouseEvent,
+} from 'mapbox-gl';
+import { Feature, LineString, Point, Position } from 'geojson';
+import axios from 'axios';
+import { initMap } from './MapEditor/initMap';
+
+mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_KEY || '';
+
+export const MapboxMap = () => {
+    const mapContainer = useRef<HTMLDivElement>(null);
+    const [map, setMap] = useState<Map>();
+    const [clickEvent, setClickEvent] = useState<MapMouseEvent & EventData>();
+    const [points, setPoints] = useState<Feature[]>([]);
+    const [routePoints, setRoutePoints] = useState<number[][]>([]);
+    const [addMarker, setAddMarker] = useState(false);
+    const [createRoute, setCreateRoute] = useState(false);
+
+    useEffect(() => {
+        if (map || !mapContainer.current) return; // initialize map only once
+        const newMap = initMap({
+            center: [-94.115251, 36.184605],
+            container: mapContainer.current,
+            zoom: 14,
+            canvasClickHandler: setClickEvent,
+        });
+        setMap(newMap);
+    }, []);
+
+    const handleCanvasClick = (e: MapMouseEvent & EventData) => {
+        console.log(addMarker);
+        console.log(e);
+    };
+
+    useEffect(() => {
+        if (!map) return;
+        const pointsSrc = map.getSource('points') as GeoJSONSource;
+        pointsSrc.setData({ type: 'FeatureCollection', features: points });
+    }, [points]);
+
+    useEffect(() => {
+        console.log('CLICK');
+        console.log('ADD MARKER: ', addMarker);
+        console.log('MAP: ', map);
+        if (!map || !clickEvent) return;
+        if (addMarker) {
+            const feature = eventToFeature(clickEvent);
+            setPoints([...points, feature]);
+        } else if (createRoute) {
+            const newPoint = [clickEvent.lngLat.lng, clickEvent.lngLat.lat];
+            const newPoints = [...routePoints, newPoint];
+            if (newPoints.length === 1) {
+                const startFeature = coordsToStartFeature(newPoint);
+                console.log(startFeature);
+                const startSrc = map.getSource('points') as GeoJSONSource;
+                startSrc.setData({
+                    type: 'FeatureCollection',
+                    features: [startFeature],
+                });
+                setRoutePoints(newPoints);
+            } else {
+                const last = newPoints.length - 1;
+                const addNextFeature = async () => {
+                    const feature = await getMatchRoute(
+                        newPoints[last - 1],
+                        newPoints[last]
+                    );
+                    setRoutePoints([...routePoints, ...feature.coordinates]);
+                };
+                addNextFeature();
+            }
+        } else {
+            const features = map.queryRenderedFeatures(clickEvent.point, {
+                layers: ['points'],
+            });
+            console.log(features);
+        }
+    }, [clickEvent]);
+
+    useEffect(() => {
+        if (!map || !clickEvent) return;
+        const routeSrc = map.getSource('route') as GeoJSONSource;
+        const newRoute = coordsToRouteFeature(routePoints);
+        routeSrc.setData(newRoute);
+    }, [routePoints]);
+
+    useEffect(() => {
+        if (!map) return;
+        if (addMarker) {
+            map.getCanvas().style.cursor = 'pointer';
+        } else {
+            map.getCanvas().style.cursor = 'grab';
+        }
+    }, [addMarker]);
+    return (
+        <div className="mt-4 h-full w-full">
+            <div className="w-full flex flex-row justify-center mb-4">
+                <Button
+                    isActive={addMarker}
+                    name="Add Marker"
+                    onClick={() => setAddMarker((state) => !state)}
+                />
+                <Button
+                    isActive={createRoute}
+                    name="Create Route"
+                    onClick={() => setCreateRoute((state) => !state)}
+                />
+            </div>
+            <div className="relative h-full w-full" ref={mapContainer}>
+                <div className="bg-white rounded absolute top-3 left-3 p-2 shadow z-10 ">
+                    <h4 className="mb-2 font-semibold">Legend</h4>
+                    <div className="flex flex-row items-center">
+                        <div
+                            className="rounded-full h-5 w-5 mr-2"
+                            style={{
+                                backgroundColor: '#A3E635',
+                                border: '#4D7C0F 2px solid',
+                            }}
+                        ></div>
+                        <div>Start / Finish</div>
+                    </div>
+                    <div className="flex flex-row items-center">
+                        <div
+                            className="rounded-full h-5 w-5 mr-2"
+                            style={{
+                                backgroundColor: '#BFDBFE',
+                                border: '#1E3A8A 2px solid',
+                            }}
+                        ></div>
+                        <div>Aid Station Level 1</div>
+                    </div>
+                    <div className="flex flex-row items-center">
+                        <div
+                            className="rounded-full h-5 w-5 mr-2"
+                            style={{
+                                backgroundColor: '#C4B5FD',
+                                border: '#5B21B6 2px solid',
+                            }}
+                        ></div>
+                        <div>Aid Station Level 2</div>
+                    </div>
+                    <div className="flex flex-row items-center">
+                        <div
+                            className="rounded-full h-5 w-5 mr-2"
+                            style={{
+                                backgroundColor: '#FDBA74',
+                                border: '#9A3412 2px solid',
+                            }}
+                        ></div>
+                        <div>Restroom</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const getMatchRoute = async (
+    lnglat1: number[],
+    lnglat2: number[]
+): Promise<LineString> => {
+    const accessToken = mapboxgl.accessToken;
+    const coords1 = `${lnglat1.join(',')}`;
+    const coords2 = `${lnglat2.join(',')}`;
+    const base = 'https://api.mapbox.com/directions/v5/mapbox/walking/';
+    const url = `${base}${coords1};${coords2}?geometries=geojson&access_token=${accessToken}`;
+    const res = await axios.get(url);
+    if (res.data.code === 'Ok') {
+        return res.data.routes[0].geometry;
+    } else {
+        console.log(res.data);
+        throw new Error('Failed to match route');
+    }
+};
+
+function eventToFeature(e: MapMouseEvent & EventData): Feature {
+    const lat = e.lngLat.lat;
+    const lng = e.lngLat.lng;
+    return {
+        type: 'Feature',
+        geometry: {
+            type: 'Point',
+            coordinates: [lng, lat],
+        },
+        properties: {
+            // title: '',
+            // types: '',
+            // type: '',
+        },
+    };
+}
+
+const coordsToStartFeature = (coordinates: Position): Feature => {
+    return {
+        type: 'Feature',
+        geometry: {
+            type: 'Point',
+            coordinates,
+        },
+        properties: {
+            title: 'Start',
+            type: 'start',
+        },
+    };
+};
+
+const coordsToRouteFeature = (coordinates: Position[]): Feature => {
+    return {
+        type: 'Feature',
+        geometry: {
+            type: 'LineString',
+            coordinates,
+        },
+        properties: {
+            title: 'Start',
+            type: 'start',
+        },
+    };
+};
+
+interface ButtonInterface {
+    name: string;
+    onClick: MouseEventHandler;
+    isActive: boolean;
+}
+
+const Button = ({ isActive, name, onClick }: ButtonInterface) => {
+    const bgColor = isActive ? 'bg-blue-400' : 'bg-blueGray-300';
+    return (
+        <button
+            className={`${bgColor} transition-colors duration-200 px-5 py-2 rounded-md mx-4 font-medium text-base hover:bg-blue-400 focus:outline-none`}
+            onClick={onClick}
+        >
+            {name}
+        </button>
+    );
+};
