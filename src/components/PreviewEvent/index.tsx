@@ -1,37 +1,43 @@
-import React, { useEffect, useState } from 'react'
-import { EventInterface } from '../../types'
+import React, { useEffect, useState } from 'react';
+import { EventInterface } from '../../types';
 
-import { Hero } from '../Event/Hero'
-import { EventDetails } from '../Event/EventDetails'
+import { Hero } from '../Event/Hero';
+import { EventDetails } from '../Event/EventDetails';
+import { initDB, getItem } from '../../lib/utils/indexDB';
+import { imageToDataURL } from '../../lib/utils';
 
 export const PreviewEvent = () => {
-    const [event, setEvent]: [
-        EventInterface | null,
-        React.Dispatch<React.SetStateAction<null>>
-    ] = useState(null)
+    const [event, setEvent] = useState<EventInterface>();
 
     useEffect(() => {
-        const init = () => {
+        const init = async () => {
             try {
-                const data = localStorage.getItem('eventState')
+                let localState: EventInterface;
+                await initDB();
+                const data = localStorage.getItem('eventState');
                 if (data) {
-                    const localState = JSON.parse(data)
-                    setEvent(localState)
+                    localState = JSON.parse(data);
+                    const heroImgFile = await getItem('heroImg');
+                    if (heroImgFile) {
+                        const heroImg = await imageToDataURL(heroImgFile);
+                        localState.heroImg = heroImg;
+                    }
+                    setEvent(localState);
                 }
             } catch (error) {
-                console.log(error.message)
+                console.log(error.message);
             }
-        }
-        init()
-        window.addEventListener('storage', init, true)
+        };
+        init();
+        window.addEventListener('storage', init, true);
         return () => {
-            window.removeEventListener('storage', init, true)
-        }
-    }, [])
-    if (!event) return null
-    const eventState = event as unknown as EventInterface
+            window.removeEventListener('storage', init, true);
+        };
+    }, []);
+    if (!event) return null;
+    const eventState = event as unknown as EventInterface;
     const { name, date, heroImg, address, city, state, eventDetails } =
-        eventState
+        eventState;
     return (
         <div>
             <div className="mt-4 mx-4">
@@ -39,5 +45,5 @@ export const PreviewEvent = () => {
                 <EventDetails eventDetails={eventDetails} />
             </div>
         </div>
-    )
-}
+    );
+};

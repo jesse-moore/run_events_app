@@ -1,14 +1,13 @@
-import React, { ChangeEventHandler } from 'react'
-import dynamic from 'next/dynamic'
+import React, { ChangeEventHandler } from 'react';
+import dynamic from 'next/dynamic';
 const SimpleMDE = dynamic(() => import('react-simplemde-editor'), {
     ssr: false,
-})
-import 'easymde/dist/easymde.min.css'
-import { EventActionInterface } from '../../types'
+});
+import 'easymde/dist/easymde.min.css';
 
 interface EventDetailsProps {
-    value: string
-    handleChange: any
+    value: string;
+    handleChange: any;
 }
 
 export const EventDetailsInput = ({
@@ -19,5 +18,5 @@ export const EventDetailsInput = ({
         <div>
             <SimpleMDE onChange={handleChange} value={value} />
         </div>
-    )
-}
+    );
+};

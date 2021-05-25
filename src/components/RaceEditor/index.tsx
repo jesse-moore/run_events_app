@@ -1,43 +1,31 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { gpxToGeoJSON } from '../../lib/utils';
-import { reducer, init } from './reducer';
 import { ToolBar } from './ToolBar';
 import { DialogModal } from '../Common/DialogModal';
-import { MapboxMap } from '../Common/Map';
-import { EventInterface } from '../../types';
+import { MapEditor } from './MapEditor/';
+import { RaceEditorInterface } from '../../types';
 import { FileInput } from './FileInput';
+import { RootState } from '../../lib/redux/reducers';
+import { actions } from '../../lib/redux/reducers/raceEditor';
+
+type State = RootState & { race: RaceEditorInterface };
 
 const RaceEditor = () => {
-    const [eventState, dispatch] = useReducer(reducer, {}, init);
+    const dispatch = useDispatch();
+    const state = useSelector((state: State) => state.race);
     const [discardWarning, setDiscardWarning] = useState(false);
 
-    useEffect(() => {
-        const initFromLocalStorage = () => {
-            const data = localStorage.getItem('racesState');
-            if (data) {
-                const localState: EventInterface = JSON.parse(data);
-                const initState = {
-                    ...localState,
-                };
-                dispatch({ type: 'init', payload: initState });
-            }
-        };
-        initFromLocalStorage();
-        window.addEventListener('storage', initFromLocalStorage, true);
-        return () => {
-            setDiscardWarning(false);
-            window.removeEventListener('storage', initFromLocalStorage, true);
-        };
-    }, []);
+    useEffect(() => {}, []);
 
-    useEffect(() => {
-        localStorage.setItem('racesState', JSON.stringify(eventState));
-    }, [eventState]);
+    // useEffect(() => {
+    //     localStorage.setItem('raceState', JSON.stringify(eventState));
+    // }, [eventState]);
 
     const handleDiscard = (confirm?: boolean) => {
         if (confirm === true) {
-            localStorage.removeItem('racesState');
-            dispatch({ type: 'init' });
+            localStorage.removeItem('raceState');
+            dispatch(actions.init());
             setDiscardWarning(false);
         } else {
             setDiscardWarning(!discardWarning);
@@ -69,7 +57,7 @@ const RaceEditor = () => {
             <ToolBar handleDiscard={() => handleDiscard()} />
             <FileInput handleInput={handleFileInput} />
             <div className="mx-auto h-500 w-full px-8">
-                <MapboxMap />
+                <MapEditor />
             </div>
         </div>
     );

@@ -1,4 +1,6 @@
 import React, { MouseEventHandler, useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { actions } from '../../../lib/redux/reducers/raceEditor';
 import mapboxgl, {
     EventData,
     GeoJSONSource,
@@ -8,56 +10,55 @@ import mapboxgl, {
 } from 'mapbox-gl';
 import { Feature, LineString, Point, Position } from 'geojson';
 import axios from 'axios';
-import { initMap } from './MapEditor/initMap';
+import { initMap, setPoints } from '../../../lib/mapBox/';
+
+import {} from './'
+import { RaceEditorState } from '../../../types';
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_KEY || '';
 
 export const MapboxMap = () => {
+    const dispatch = useDispatch();
+    const state = useSelector((state: RaceEditorState) => state.race);
     const mapContainer = useRef<HTMLDivElement>(null);
-    const [map, setMap] = useState<Map>();
+    // const [map, setMap] = useState<Map>();
     const [clickEvent, setClickEvent] = useState<MapMouseEvent & EventData>();
+
     const [points, setPoints] = useState<Feature[]>([]);
     const [routePoints, setRoutePoints] = useState<number[][]>([]);
     const [addMarker, setAddMarker] = useState(false);
     const [createRoute, setCreateRoute] = useState(false);
 
     useEffect(() => {
-        if (map || !mapContainer.current) return; // initialize map only once
-        const newMap = initMap({
+        if (!mapContainer.current) return; // initialize map only once
+        initMap({
             center: [-94.115251, 36.184605],
             container: mapContainer.current,
             zoom: 14,
             canvasClickHandler: setClickEvent,
         });
-        setMap(newMap);
     }, []);
 
     useEffect(() => {
-        if (!map) return;
-        const pointsSrc = map.getSource('points') as GeoJSONSource;
-        pointsSrc.setData({ type: 'FeatureCollection', features: points });
+        setPoints(points);
     }, [points]);
 
     useEffect(() => {
-        console.log('CLICK');
-        console.log('ADD MARKER: ', addMarker);
-        console.log('MAP: ', map);
         if (!map || !clickEvent) return;
         if (addMarker) {
             const feature = eventToFeature(clickEvent);
-            setPoints([...points, feature]);
+            dispatch(actions.addMarker(feature));
         } else if (createRoute) {
             const newPoint = [clickEvent.lngLat.lng, clickEvent.lngLat.lat];
+            dispatch(actions.addRoutePoint(newPoint));
             const newPoints = [...routePoints, newPoint];
             if (newPoints.length === 1) {
                 const startFeature = coordsToStartFeature(newPoint);
-                console.log(startFeature);
                 const startSrc = map.getSource('points') as GeoJSONSource;
                 startSrc.setData({
                     type: 'FeatureCollection',
                     features: [startFeature],
                 });
-                setRoutePoints(newPoints);
             } else {
                 const last = newPoints.length - 1;
                 const addNextFeature = async () => {

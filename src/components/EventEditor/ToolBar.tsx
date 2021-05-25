@@ -25,7 +25,7 @@ export const ToolBar = ({ handleDiscard }: ToolBarProps) => {
                     <a target="_blank" href="/preview-local">
                         <Button type="blue" name="Live Preview" />
                     </a>
-                    <Link href="/race-editor">
+                    <Link href="/editor/race">
                         <ButtonLink type="green" name="Next" />
                     </Link>
                 </div>

@@ -1,40 +1,44 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { actions } from '../../lib/redux/reducers/eventEditor';
 import { imageToDataURL, dataURLtoFile } from '../../lib/utils';
-import { reducer, init } from './reducer';
+import { initDB, putFile, getItem } from '../../lib/utils/indexDB';
 import { EditorForm } from './EditorForm';
 import { ToolBar } from './ToolBar';
 import { DialogModal } from '../Common/DialogModal';
 import { EventInterface } from '../../types';
+import { RootState } from '../../lib/redux/reducers';
+
+type State = RootState & { event: EventInterface };
 
 const EventEditor = () => {
-    const [eventState, dispatch] = useReducer(reducer, {}, init);
+    const dispatch = useDispatch();
+    const eventState = useSelector((state: State) => state.event);
+    const [isLoaded, setIsLoaded] = useState(false);
     // const [createEvent] = useCreateEventMutation({
     //     onError: (error) => console.log(error),
     // });
     const [discardWarning, setDiscardWarning] = useState(false);
-
     useEffect(() => {
-        const initFromLocalStorage = () => {
+        const initFromLocalStorage = async () => {
+            await initDB();
             const data = localStorage.getItem('eventState');
             if (data) {
                 const localState: EventInterface = JSON.parse(data);
-                const heroImgLocal = localState.heroImg;
-                if (heroImgLocal.src && heroImgLocal.name) {
-                    const heroImgFile = dataURLtoFile(
-                        heroImgLocal.src,
-                        heroImgLocal.name
+
+                const heroImgLocalFile: File = await getItem('heroImg');
+                if (heroImgLocalFile) {
+                    const heroImgDataURL = await imageToDataURL(
+                        heroImgLocalFile
                     );
-                    if (heroImgFile) heroImgLocal.file = heroImgFile;
+                    localState.heroImg = heroImgDataURL;
                 }
-                const initState = {
-                    ...localState,
-                    heroImg: { ...heroImgLocal },
-                };
-                dispatch({ type: 'init', payload: initState });
+                dispatch(actions.updateEvent(localState));
             }
         };
         initFromLocalStorage();
         window.addEventListener('storage', initFromLocalStorage, true);
+        setIsLoaded(true);
         return () => {
             setDiscardWarning(false);
             window.removeEventListener('storage', initFromLocalStorage, true);
@@ -42,7 +46,12 @@ const EventEditor = () => {
     }, []);
 
     useEffect(() => {
-        localStorage.setItem('eventState', JSON.stringify(eventState));
+        if (isLoaded) {
+            const { heroImg } = eventState;
+            const { dataURL, ...rest } = heroImg;
+            const localState = { ...eventState, heroImg: rest };
+            localStorage.setItem('eventState', JSON.stringify(localState));
+        }
     }, [eventState]);
 
     const handleImageInput = async ({
@@ -53,37 +62,49 @@ const EventEditor = () => {
         const { files } = target;
         if (files) {
             try {
-                const image = await imageToDataURL(files);
-                dispatch({
-                    type: 'updateHeroImg',
-                    payload: image,
-                });
+                await putFile('heroImg', files[0]);
+                const image = await imageToDataURL(files[0]);
+                dispatch(actions.updateHeroImg(image));
             } catch ({ error }) {
-                dispatch({
-                    type: 'updateHeroImg',
-                    payload: { error },
-                });
+                dispatch(actions.updateHeroImg(error));
             }
         }
     };
 
     const handleEventDetailsInput = (value: string) => {
-        dispatch({
-            type: 'updateEventDetails',
-            payload: value,
-        });
+        dispatch(actions.updateEventDetails(value));
     };
 
     const handleChange = ({ target }: { target: HTMLInputElement }) => {
         const { name, value } = target;
-        const actionType = `update${name[0].toUpperCase()}${name.substr(1)}`;
-        dispatch({ type: actionType, payload: value });
+        switch (name) {
+            case 'name':
+                dispatch(actions.updateName(value));
+                break;
+            case 'address':
+                dispatch(actions.updateAddress(value));
+                break;
+            case 'city':
+                dispatch(actions.updateCity(value));
+                break;
+            case 'state':
+                dispatch(actions.updateState(value));
+                break;
+            case 'date':
+                dispatch(actions.updateDate(value));
+                break;
+            case 'time':
+                dispatch(actions.updateTime(value));
+                break;
+            default:
+                break;
+        }
     };
 
     const handleDiscard = (confirm?: boolean) => {
         if (confirm === true) {
             localStorage.removeItem('eventState');
-            dispatch({ type: 'init' });
+            dispatch(actions.init());
             setDiscardWarning(false);
         } else {
             setDiscardWarning(!discardWarning);
@@ -113,7 +134,6 @@ const EventEditor = () => {
             <ToolBar handleDiscard={() => handleDiscard()} />
             <EditorForm
                 {...{
-                    eventState,
                     handleChange,
                     handleEventDetailsInput,
                     handleImageInput,

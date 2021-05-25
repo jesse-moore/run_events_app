@@ -1,4 +1,6 @@
+import { FeatureCollection } from 'geojson';
 import mapboxgl, { LngLatLike, Map } from 'mapbox-gl';
+import { Marker } from '../../types';
 
 interface InitMapInterface {
     center?: LngLatLike;
@@ -7,20 +9,7 @@ interface InitMapInterface {
     canvasClickHandler: any;
 }
 
-export const initMap = (options: InitMapInterface): Map => {
-    const {
-        center = [0, 0],
-        zoom = 10,
-        container,
-        canvasClickHandler,
-    } = options;
-
-    const map = new mapboxgl.Map({
-        container,
-        style: 'mapbox://styles/mapbox/streets-v11',
-        center,
-        zoom,
-    });
+export const initMap = (map: Map): Map => {
     const popup = new mapboxgl.Popup({
         closeButton: false,
         closeOnClick: false,
@@ -71,7 +60,7 @@ export const initMap = (options: InitMapInterface): Map => {
                     ['get', 'type'],
                     'start',
                     '#A3E635',
-                    'Aid Station Level 1',
+                    'Aid Station',
                     '#BFDBFE',
                     'Aid Station Level 2',
                     '#C4B5FD',
@@ -84,7 +73,7 @@ export const initMap = (options: InitMapInterface): Map => {
                     ['get', 'type'],
                     'start',
                     '#4D7C0F',
-                    'Aid Station Level 1',
+                    'Aid Station',
                     '#1E3A8A',
                     'Aid Station Level 2',
                     '#5B21B6',
@@ -98,24 +87,25 @@ export const initMap = (options: InitMapInterface): Map => {
             minzoom: 9,
         });
     });
-    map.on('click', (e) => {
-        canvasClickHandler(e);
-    });
     map.on('mouseenter', 'points', function (e) {
         // Change the cursor style as a UI indicator.
         map.getCanvas().style.cursor = 'pointer';
-        console.log(e);
         if (!e.features) return;
         const coordinates = e.lngLat;
-        // const { title, types } = e.features[0].properties;
-        // const typesList = types
-        //     .split(', ')
-        //     .map((type) => {
-        //         return `<li>${type}</li>`;
-        //     })
-        //     .join('');
-        const title = 'TITLE';
-        const description = `<h3 class="text-lg">${title}</h3>`;
+        const feature = e.features[0].properties as Marker['properties'];
+        const { type, amenities } = feature;
+        let list = '';
+        if (amenities) {
+            const amenitiesList = amenities
+                .split(',')
+                .map((type) => {
+                    return `<li>${type}</li>`;
+                })
+                .join('');
+            list = `<ul>${amenitiesList}</ul>`;
+        }
+
+        const description = `<h3 class="text-lg">${type}</h3>${list}`;
 
         // Ensure that if the map is zoomed out such that multiple
         // copies of the feature are visible, the popup appears
