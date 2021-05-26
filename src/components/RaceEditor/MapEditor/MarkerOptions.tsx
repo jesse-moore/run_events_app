@@ -66,11 +66,6 @@ export const MarkerOptions = () => {
         dispatch(actions.closeMarkerOptionsModal());
     };
 
-    const isSelected = (item: string): boolean => {
-        if (!state.marker) return false;
-        return amenities.includes(item);
-    };
-
     return (
         <div className="absolute z-20 top-0 h-full w-full">
             <div
@@ -103,16 +98,10 @@ export const MarkerOptions = () => {
                             className="w-full"
                             multiple
                             onChange={handleAmenitiesSelect}
+                            value={amenities}
                         >
-                            <option value="Food" selected={isSelected('Food')}>
-                                Food
-                            </option>
-                            <option
-                                value="Water"
-                                selected={isSelected('Water')}
-                            >
-                                Water
-                            </option>
+                            <option value="Food">Food</option>
+                            <option value="Water">Water</option>
                         </select>
                     </label>
                     <Button name="Save" color="bg-green" type="submit" />

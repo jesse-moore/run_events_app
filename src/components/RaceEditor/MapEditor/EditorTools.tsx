@@ -18,10 +18,10 @@ export const EditorTools = ({ tools }: EditorToolsProps) => {
                     onClick={() => dispatch(actions.setAddMarkerActive())}
                 >
                     <ToolPrimary isActive={tools.addMarker} name="Add Marker" />
-                    <ToolSecondary
+                    {/* <ToolSecondary
                         name="Undo"
                         onClick={() => dispatch(actions.undoAddMarker())}
-                    />
+                    /> */}
                 </ToolGroup>
                 <ToolGroup
                     onClick={() => dispatch(actions.setCreateRouteActive())}
@@ -30,10 +30,10 @@ export const EditorTools = ({ tools }: EditorToolsProps) => {
                         isActive={tools.createRoute}
                         name="Create Route"
                     />
-                    <ToolSecondary
+                    {/* <ToolSecondary
                         name="Undo"
                         onClick={() => console.log('UNDO ROUTE')}
-                    />
+                    /> */}
                 </ToolGroup>
             </div>
         </div>

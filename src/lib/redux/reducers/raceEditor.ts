@@ -1,7 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import dayjs from 'dayjs';
-import { stat } from 'fs';
-import { Feature } from 'geojson';
 import { RaceEditorInterface, Marker } from '../../../types';
 
 const initialState: RaceEditorInterface = {
@@ -93,7 +90,6 @@ const reducers = {
     ) => {
         const newPoints = state.points.map((point) => {
             if (point.properties.id === action.payload.id) {
-                console.log(action.payload.amenities);
                 if (action.payload.type) {
                     point.properties.type = action.payload.type;
                 }

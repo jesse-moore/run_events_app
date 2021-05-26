@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import mapboxgl, { EventData, MapMouseEvent } from 'mapbox-gl';
+import mapboxgl, { EventData, LngLat, MapMouseEvent } from 'mapbox-gl';
 
 import { coordsToRouteFeature } from '../../../lib/utils';
 import {
@@ -15,10 +15,14 @@ import { RaceEditorState } from '../../../types';
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_KEY || '';
 
 interface MapboxMapProps {
-    clickEventHandler: (event?: MapMouseEvent & EventData) => void;
+    canvasClickHandler: (event?: MapMouseEvent & EventData) => void;
+    setMovedPoint: Dispatch<SetStateAction<{ coords: number[]; id: string }>>;
 }
 
-export const MapboxMap = ({ clickEventHandler }: MapboxMapProps) => {
+export const MapboxMap = ({
+    canvasClickHandler,
+    setMovedPoint,
+}: MapboxMapProps) => {
     const state = useSelector((state: RaceEditorState) => state.race);
     const { points, routePoints } = state;
     const mapContainer = useRef<HTMLDivElement>(null);
@@ -29,7 +33,8 @@ export const MapboxMap = ({ clickEventHandler }: MapboxMapProps) => {
             center: [-94.115251, 36.184605],
             container: mapContainer.current,
             zoom: 14,
-            canvasClickHandler: clickEventHandler,
+            canvasClickHandler: canvasClickHandler,
+            setMovedPoint: setMovedPoint,
         });
         return () => {
             removeMap();

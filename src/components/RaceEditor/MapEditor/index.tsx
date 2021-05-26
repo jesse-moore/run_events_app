@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions } from '../../../lib/redux/reducers/raceEditor';
-import mapboxgl, { EventData, MapMouseEvent } from 'mapbox-gl';
+import mapboxgl, { EventData, LngLat, MapMouseEvent } from 'mapbox-gl';
 import { Feature, LineString, Position } from 'geojson';
 import axios from 'axios';
 import { createMarker } from '../../../lib/utils';
@@ -16,6 +16,10 @@ export const MapEditor = () => {
     const dispatch = useDispatch();
     const state = useSelector((state: RaceEditorState) => state.race);
     const [mapClick, setMapClick] = useState<MapMouseEvent & EventData>();
+    const [movedPoint, setMovedPoint] = useState<{
+        coords: number[];
+        id: string;
+    }>({ coords: [], id: '' });
 
     const handleAddMarkerEvent = (event: MapMouseEvent & EventData) => {
         const features = event.target.queryRenderedFeatures(event.point, {
@@ -54,6 +58,7 @@ export const MapEditor = () => {
 
     const handleSelectEvent = (event: MapMouseEvent & EventData) => {
         console.log('SELECT');
+        console.log('POINTS: ', state.points);
     };
 
     useEffect(() => {
@@ -99,12 +104,24 @@ export const MapEditor = () => {
         // }
     }, [mapClick]);
 
+    useEffect(() => {
+        dispatch(
+            actions.updateMarker({
+                coordinates: movedPoint.coords,
+                id: movedPoint.id,
+            })
+        );
+    }, [movedPoint]);
+
     const { modals } = state;
     return (
         <>
             <EditorTools tools={state.tools} />
             <div className="h-full w-full relative">
-                <MapboxMap clickEventHandler={setMapClick} />
+                <MapboxMap
+                    canvasClickHandler={setMapClick}
+                    setMovedPoint={setMovedPoint}
+                />
                 <Legend />
                 {modals.markerOptions.active && <MarkerOptions />}
             </div>
