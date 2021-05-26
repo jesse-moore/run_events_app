@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { Button } from './Button'
-import { ButtonLink } from './ButtonLink'
+import { Button } from './Common/Button'
+import { ButtonLink } from './Common/ButtonLink'
 
 export const Hero = () => {
     const opacity = 0.6
@@ -25,7 +25,7 @@ export const Hero = () => {
                 className="text-xl absolute top-1/2"
                 style={{ transform: 'translate(20%, -50%)' }}
             >
-                <Link href="/create_event">
+                <Link href="/editor/event">
                     <ButtonLink name="Create Event" type="primary" />
                 </Link>
                 <Button name="See Demo" type="primary" />

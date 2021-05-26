@@ -6,27 +6,27 @@
 
 /* Headings */
 h1 {
-    @apply my-4 text-4xl;
+    @apply my-2 text-4xl;
 }
 
 h2 {
-    @apply my-6 text-3xl;
+    @apply my-4 text-3xl;
 }
 
 h3 {
-    @apply my-4 text-2xl;
+    @apply my-2 text-xl;
 }
 
 h4 {
-    @apply my-6 text-xl;
+    @apply my-2 text-xl;
 }
 
 h5 {
-    @apply my-8 text-lg;
+    @apply my-2 text-lg;
 }
 
 h6 {
-    @apply my-10 text-base font-medium;
+    @apply my-2 text-base font-medium;
 }
 
 /* Paragraphs */

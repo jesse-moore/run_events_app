@@ -14,17 +14,21 @@ export const Button = ({ name, type, onClick }: ButtonProps) => {
             hoverBG = 'bg-blueGray-200'
             bg = 'bg-blueGray-300'
             break
-        case 'discard':
+        case 'orange':
             hoverBG = 'bg-orange-400'
             bg = 'bg-orange-300'
             break
-        case 'back':
+        case 'red':
             hoverBG = 'bg-red-500'
             bg = 'bg-red-400'
             break
-        case 'preview':
+        case 'blue':
             hoverBG = 'bg-blue-400'
             bg = 'bg-blue-300'
+            break
+        case 'green':
+            hoverBG = 'bg-green-400'
+            bg = 'bg-green-300'
             break
         default:
             hoverBG = 'bg-blueGray-200'

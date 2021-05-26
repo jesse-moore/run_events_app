@@ -1,5 +1,5 @@
 import { ChangeEventHandler, FocusEventHandler } from 'react'
-import { InputMessage } from '../InputMessage'
+import { InputMessage } from '../Common/InputMessage'
 
 interface InputProps {
     errors: string[] | null
