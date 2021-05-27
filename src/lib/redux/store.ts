@@ -8,11 +8,11 @@ import {
 import { rootState, RootState, reducers } from './reducers';
 import { useMemo } from 'react';
 
-let store: Store | undefined;
+export let store: Store | undefined;
 const rootReducer = { ui: reducers.ui, user: reducers.user };
 
 function initStore(
-    preloadedState: DeepPartial<RootState> = rootState,
+    preloadedState: RootState = rootState,
     reducer: ReducersMapObject = rootReducer
 ) {
     return configureStore({
@@ -22,7 +22,7 @@ function initStore(
 }
 
 export const initializeStore = (
-    preloadedState: DeepPartial<RootState>,
+    preloadedState: RootState,
     reducer: ReducersMapObject
 ) => {
     let _store = store ?? initStore(preloadedState, reducer);
@@ -30,12 +30,14 @@ export const initializeStore = (
     // After navigating to a page with an initial Redux state, merge that state
     // with the current state in the store, and create a new store
     if (preloadedState && store) {
-        const { ui, user } = store.getState();
+        const { ui, user, event, race } = store.getState();
+        const state: RootState = { ui, user };
+        if (reducer.event) state.event = event;
+        if (reducer.race) state.race = race;
         _store = initStore(
             {
-                ui,
-                user,
                 ...preloadedState,
+                ...state,
             },
             reducer
         );
@@ -47,14 +49,10 @@ export const initializeStore = (
     if (typeof window === 'undefined') return _store;
     // Create the store once in the client
     if (!store) store = _store;
-
     return _store;
 };
 
-export function useStore(
-    initialState: DeepPartial<RootState>,
-    pageReducersRefs: string[]
-) {
+export function useStore(initialState: RootState, pageReducersRefs: string[]) {
     const pageReducers = getPageReducers(pageReducersRefs);
     const reducer = { ...rootReducer, ...pageReducers };
     const store = useMemo(

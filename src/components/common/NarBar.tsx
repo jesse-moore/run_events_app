@@ -1,32 +1,32 @@
-import { useDispatch } from 'react-redux'
-import Link from 'next/link'
-import Router from 'next/router'
-import { toggleSignupForm, toggleLoginForm } from '../../lib/redux/reducers/ui'
-import { signout } from '../../lib/redux/reducers/user'
-import { logout } from '../../lib/cognito'
-import { apolloClient } from '../../lib/graphql/apollo'
-import { UserDataInterface } from '../../types'
-import { Button } from './Button'
-import { Dispatch } from 'react'
-import { ButtonLink } from './ButtonLink'
+import { useDispatch, useSelector } from 'react-redux';
+import Link from 'next/link';
+import Router from 'next/router';
+import { toggleSignupForm, toggleLoginForm } from '../../lib/redux/reducers/ui';
+import { signout } from '../../lib/redux/reducers/user';
+import { logout } from '../../lib/cognito';
+import { apolloClient } from '../../lib/graphql/apollo';
+import { UserDataInterface } from '../../types';
+import { Button } from './Button';
+import { Dispatch } from 'react';
+import { ButtonLink } from './ButtonLink';
+import { RootState } from '../../lib/redux/reducers';
 
-interface NavBarProps {
-    user: UserDataInterface | null
-}
-
-export const NarBar = ({ user }: NavBarProps) => {
-    const dispatch = useDispatch()
+export const NarBar = () => {
+    const dispatch = useDispatch();
+    const { user } = useSelector((state: RootState) => state.user);
 
     const handleLogout = () => {
-        logout()
-        dispatch(signout())
-        apolloClient?.clearStore()
-        Router.push('/')
-    }
+        logout();
+        dispatch(signout());
+        apolloClient?.clearStore();
+        Router.push('/');
+    };
 
     return (
-        <div className="w-full h-14 px-4 flex flex-row items-center bg-white sticky top-0 z-20">
-            <div className="mr-auto">LOGO</div>
+        <div className="w-full py-3 px-4 flex flex-row items-center bg-white sticky top-0 z-20">
+            <Link href="/">
+                <div className="mr-auto">LOGO</div>
+            </Link>
 
             <a href="/events">
                 <Button name="Events" />
@@ -37,33 +37,33 @@ export const NarBar = ({ user }: NavBarProps) => {
                 <UnauthenticatedUserNavLinks dispatch={dispatch} />
             )}
         </div>
-    )
-}
+    );
+};
 
 const AuthenticatedUserNavLinks = ({ handleLogout }: { handleLogout: any }) => {
     return (
         <>
             <Button name="Logout" onClick={() => handleLogout()} />
             <Link href="/app" passHref>
-                <ButtonLink name="Go to console" />
+                <ButtonLink name="Go to console" color="blue" />
             </Link>
         </>
-    )
-}
+    );
+};
 
 const UnauthenticatedUserNavLinks = ({
     dispatch,
 }: {
-    dispatch: Dispatch<any>
+    dispatch: Dispatch<any>;
 }) => {
     return (
         <>
             <Button name="Login" onClick={() => dispatch(toggleLoginForm())} />
             <Button
                 name="Signup"
-                type="blue"
+                color="blue"
                 onClick={() => dispatch(toggleSignupForm())}
             />
         </>
-    )
-}
+    );
+};

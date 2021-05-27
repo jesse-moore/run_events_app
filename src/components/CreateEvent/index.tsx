@@ -1,24 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions } from '../../lib/redux/reducers/eventEditor';
-import { imageToDataURL, dataURLtoFile } from '../../lib/utils';
-import { initDB, putFile, getItem } from '../../lib/utils/indexDB';
+import { imageToDataURL } from '../../lib/utils';
+import { putFile } from '../../lib/utils/indexDB';
 import { EditorForm } from './EditorForm';
 import { ToolBar } from './ToolBar';
 import { DialogModal } from '../Common/DialogModal';
 import { EventInterface } from '../../types';
 import { RootState } from '../../lib/redux/reducers';
+import { getItem, initDB } from '../../lib/utils/indexDB';
 
 type State = RootState & { event: EventInterface };
 
 const EventEditor = () => {
-    const dispatch = useDispatch();
-    const eventState = useSelector((state: State) => state.event);
+    const state = useSelector((state: State) => state.event);
     const [isLoaded, setIsLoaded] = useState(false);
+    const dispatch = useDispatch();
     // const [createEvent] = useCreateEventMutation({
     //     onError: (error) => console.log(error),
     // });
     const [discardWarning, setDiscardWarning] = useState(false);
+
     useEffect(() => {
         const initFromLocalStorage = async () => {
             await initDB();
@@ -47,12 +49,12 @@ const EventEditor = () => {
 
     useEffect(() => {
         if (isLoaded) {
-            const { heroImg } = eventState;
+            const { heroImg } = state;
             const { dataURL, ...rest } = heroImg;
-            const localState = { ...eventState, heroImg: rest };
+            const localState = { ...state, heroImg: rest };
             localStorage.setItem('eventState', JSON.stringify(localState));
         }
-    }, [eventState]);
+    }, [state]);
 
     const handleImageInput = async ({
         target,

@@ -1,14 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RaceEditorInterface, Marker } from '../../../types';
+import { Feature, LineString } from 'geojson';
+import { RaceEditorInterface, Marker, RaceEditorTools } from '../../../types';
 
 const initialState: RaceEditorInterface = {
     name: '',
     points: [],
     routePoints: [],
+    routeStartMarker: null,
+    routeEndMarker: null,
     activeTool: '',
     tools: {
         addMarker: false,
-        createRoute: false,
+        moveMarker: false,
+        addWaypoint: false,
         select: true,
     },
     modals: {
@@ -27,11 +31,36 @@ const reducers = {
     addMarker: (state: RaceState, action: PayloadAction<Marker>) => {
         state.points = [...state.points, action.payload];
     },
-    addRoutePoint: (state: RaceState, action: PayloadAction<number[]>) => {
+    addRoutePoint: (
+        state: RaceState,
+        action: PayloadAction<Feature<LineString>>
+    ) => {
         state.routePoints = [...state.routePoints, action.payload];
     },
+    addStartMarker: (state: RaceState, action: PayloadAction<Marker>) => {
+        state.routeStartMarker = action.payload;
+    },
+    addEndMarker: (state: RaceState, action: PayloadAction<Marker>) => {
+        state.routeEndMarker = action.payload;
+    },
     undoAddRoutePoint: (state: RaceState) => {
-        if (state.routePoints.length > 0) state.routePoints.pop();
+        const length = state.routePoints.length;
+        // if (length > 0) state.routePoints.pop();
+        if (length === 1 && state.routeEndMarker) {
+            console.log('ONE');
+            state.routeEndMarker = null;
+            state.routePoints = [];
+        } else if (length === 0 && state.routeStartMarker) {
+            console.log('ZERO');
+            state.routeStartMarker = null;
+        } else if (length > 1) {
+            state.routePoints.pop();
+            const end = state.routePoints[state.routePoints.length - 1];
+            if (!end || !state.routeEndMarker) return;
+            const endCoords =
+                end.geometry.coordinates[end.geometry.coordinates.length - 1];
+            state.routeEndMarker.geometry.coordinates = endCoords;
+        }
     },
     undoAddMarker: (state: RaceState) => {
         state.modals.markerOptions.active = false;
@@ -40,23 +69,21 @@ const reducers = {
     init: () => {
         return initialState;
     },
-    updateState: (state: RaceState) => {
-        return state;
+    updateState: (
+        _state: RaceState,
+        actions: PayloadAction<RaceEditorInterface>
+    ) => {
+        return actions.payload;
     },
-    setAddMarkerActive: (state: RaceState) => {
-        state.tools.addMarker = true;
-        state.tools.createRoute = false;
-        state.tools.select = false;
-    },
-    setCreateRouteActive: (state: RaceState) => {
+    setToolActive: (
+        state: RaceState,
+        action: PayloadAction<RaceEditorTools>
+    ) => {
         state.tools.addMarker = false;
-        state.tools.createRoute = true;
+        state.tools.moveMarker = false;
+        state.tools.addWaypoint = false;
         state.tools.select = false;
-    },
-    setSelectActive: (state: RaceState) => {
-        state.tools.addMarker = false;
-        state.tools.createRoute = false;
-        state.tools.select = true;
+        state.tools[action.payload] = true;
     },
     openMarkerOptionsModal: (
         state: RaceState,
@@ -78,6 +105,10 @@ const reducers = {
             return point.properties.id !== action.payload;
         });
         state.points = newPoints;
+    },
+    test: (state: RaceState, action: PayloadAction<string>) => {
+        console.log(action.payload);
+        return state;
     },
     updateMarker: (
         state: RaceState,

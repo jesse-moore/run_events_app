@@ -8,6 +8,28 @@ mutation CreateEvent($event: EventInput!) {
     }
 }
 
+query UserEvents {
+    userEvents {
+        id
+        name
+        dateTime
+        address
+        city
+        state
+    }
+}
+
+query UserEventByID($id: String!) {
+    userEventByID(id: $id) {
+        id
+        name
+        dateTime
+        address
+        city
+        state
+    }
+}
+
 input EventInput {
     name: String
     heroImg: Upload

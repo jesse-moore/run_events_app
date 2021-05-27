@@ -20,22 +20,21 @@ export type Scalars = {
 
 export type Event = {
   __typename?: 'Event';
-  id?: Maybe<Scalars['ID']>;
-  name?: Maybe<Scalars['String']>;
-  heroImg?: Maybe<Scalars['String']>;
-  dateTime?: Maybe<Scalars['Date']>;
-  address?: Maybe<Scalars['String']>;
-  city?: Maybe<Scalars['String']>;
-  state?: Maybe<Scalars['String']>;
-  eventDetails?: Maybe<Scalars['String']>;
-  races?: Maybe<Array<Maybe<Race>>>;
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  heroImg: Scalars['String'];
+  dateTime: Scalars['Date'];
+  address: Scalars['String'];
+  city: Scalars['String'];
+  state: Scalars['String'];
+  eventDetails: Scalars['String'];
+  races: Array<Maybe<Race>>;
 };
 
 export type EventInput = {
   name: Scalars['String'];
   heroImg?: Maybe<Scalars['Upload']>;
   dateTime: Scalars['String'];
-  utcOffset?: Maybe<Scalars['Int']>;
   address?: Maybe<Scalars['String']>;
   city?: Maybe<Scalars['String']>;
   state?: Maybe<Scalars['String']>;
@@ -71,11 +70,17 @@ export type Query = {
   events: Array<Maybe<Event>>;
   eventBySlug?: Maybe<Event>;
   userEvents: Array<Maybe<Event>>;
+  userEventByID?: Maybe<Event>;
 };
 
 
 export type QueryEventBySlugArgs = {
   slug: Scalars['String'];
+};
+
+
+export type QueryUserEventByIdArgs = {
+  id: Scalars['String'];
 };
 
 export type Race = {
@@ -120,6 +125,30 @@ export type CreateEventMutation = (
   & { createEvent?: Maybe<(
     { __typename?: 'Event' }
     & Pick<Event, 'name'>
+  )> }
+);
+
+export type UserEventsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UserEventsQuery = (
+  { __typename?: 'Query' }
+  & { userEvents: Array<Maybe<(
+    { __typename?: 'Event' }
+    & Pick<Event, 'id' | 'name' | 'dateTime' | 'address' | 'city' | 'state'>
+  )>> }
+);
+
+export type UserEventByIdQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type UserEventByIdQuery = (
+  { __typename?: 'Query' }
+  & { userEventByID?: Maybe<(
+    { __typename?: 'Event' }
+    & Pick<Event, 'id' | 'name' | 'dateTime' | 'address' | 'city' | 'state'>
   )> }
 );
 
@@ -199,6 +228,85 @@ export function useCreateEventMutation(baseOptions?: Apollo.MutationHookOptions<
 export type CreateEventMutationHookResult = ReturnType<typeof useCreateEventMutation>;
 export type CreateEventMutationResult = Apollo.MutationResult<CreateEventMutation>;
 export type CreateEventMutationOptions = Apollo.BaseMutationOptions<CreateEventMutation, CreateEventMutationVariables>;
+export const UserEventsDocument = gql`
+    query UserEvents {
+  userEvents {
+    id
+    name
+    dateTime
+    address
+    city
+    state
+  }
+}
+    `;
+
+/**
+ * __useUserEventsQuery__
+ *
+ * To run a query within a React component, call `useUserEventsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUserEventsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUserEventsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useUserEventsQuery(baseOptions?: Apollo.QueryHookOptions<UserEventsQuery, UserEventsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<UserEventsQuery, UserEventsQueryVariables>(UserEventsDocument, options);
+      }
+export function useUserEventsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UserEventsQuery, UserEventsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<UserEventsQuery, UserEventsQueryVariables>(UserEventsDocument, options);
+        }
+export type UserEventsQueryHookResult = ReturnType<typeof useUserEventsQuery>;
+export type UserEventsLazyQueryHookResult = ReturnType<typeof useUserEventsLazyQuery>;
+export type UserEventsQueryResult = Apollo.QueryResult<UserEventsQuery, UserEventsQueryVariables>;
+export const UserEventByIdDocument = gql`
+    query UserEventByID($id: String!) {
+  userEventByID(id: $id) {
+    id
+    name
+    dateTime
+    address
+    city
+    state
+  }
+}
+    `;
+
+/**
+ * __useUserEventByIdQuery__
+ *
+ * To run a query within a React component, call `useUserEventByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUserEventByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUserEventByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useUserEventByIdQuery(baseOptions: Apollo.QueryHookOptions<UserEventByIdQuery, UserEventByIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<UserEventByIdQuery, UserEventByIdQueryVariables>(UserEventByIdDocument, options);
+      }
+export function useUserEventByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UserEventByIdQuery, UserEventByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<UserEventByIdQuery, UserEventByIdQueryVariables>(UserEventByIdDocument, options);
+        }
+export type UserEventByIdQueryHookResult = ReturnType<typeof useUserEventByIdQuery>;
+export type UserEventByIdLazyQueryHookResult = ReturnType<typeof useUserEventByIdLazyQuery>;
+export type UserEventByIdQueryResult = Apollo.QueryResult<UserEventByIdQuery, UserEventByIdQueryVariables>;
 export const CreateUserDocument = gql`
     mutation CreateUser {
   createUser {

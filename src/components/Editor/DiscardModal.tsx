@@ -1,7 +1,6 @@
-import { ReactEventHandler } from 'react';
-import { Button } from './Button';
+import { Button } from '../Common/Button';
 
-interface ModalProps {
+interface DiscardModal {
     children?: React.ReactNode;
     title: string;
     closeHandler: React.MouseEventHandler<HTMLDivElement>;
@@ -9,18 +8,20 @@ interface ModalProps {
     loadingOverlay?: React.ReactNode;
 }
 
-export function DialogModal({
+export function DiscardModal({
     children = null,
     title,
     closeHandler,
     confirmHandler,
     loadingOverlay = null,
-}: ModalProps) {
+}: DiscardModal) {
     return (
         <div className="absolute top-0 h-full w-full z-10">
-            <div className="min-h-full blur w-full bg-gray-800 bg-opacity-60" />
-            <div className="fixed top-1/4 w-full">
-                <div className="relative bg-gray-100 bg-opacity-80 rounded-md w-500 mx-auto shadow-md overflow-hidden">
+            <div
+                className="fixed top-1/4 left-1/2"
+                style={{ transform: 'translateX(-50%)' }}
+            >
+                <div className="bg-gray-300 bg-opacity-80 rounded-md w-500 mx-auto shadow-md overflow-hidden">
                     {loadingOverlay}
                     <div className="relative py-4 mx-6 grid grid-cols-3 grid-rows-1 h-20 justify-items-center">
                         <div className="text-center text-3xl col-start-2 whitespace-nowrap">

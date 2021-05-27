@@ -1,4 +1,4 @@
-import { Feature, Point } from 'geojson';
+import { Feature, LineString, Point } from 'geojson';
 import { RootState } from '../lib/redux/reducers';
 
 export interface EventInterface {
@@ -12,6 +12,13 @@ export interface EventInterface {
     eventDetails: string;
 }
 
+export interface MapBoxState {
+    points?: Feature[];
+    routePoints?: Feature<LineString>[];
+    startPoint?: Marker;
+    endPoint?: Marker;
+}
+
 export interface Marker extends Feature<Point> {
     properties: {
         type: string;
@@ -21,15 +28,21 @@ export interface Marker extends Feature<Point> {
 }
 
 export type RaceEditorState = RootState & { race: RaceEditorInterface };
+
+export type RaceEditorTools =
+    | 'addMarker'
+    | 'moveMarker'
+    | 'addWaypoint'
+    | 'select';
 export interface RaceEditorInterface {
     name: string;
     points: Marker[];
-    routePoints: number[][];
+    routePoints: Feature<LineString>[];
+    routeStartMarker: Marker | null;
+    routeEndMarker: Marker | null;
     activeTool: string;
     tools: {
-        addMarker: boolean;
-        createRoute: boolean;
-        select: boolean;
+        [k in RaceEditorTools]: boolean;
     };
     modals: {
         markerOptions: {
@@ -56,4 +69,12 @@ export interface UserDataInterface {
 export interface EventActionInterface {
     type: string;
     payload?: any;
+}
+
+export interface EventDetailsState {
+    name: string;
+    address: string;
+    city: string;
+    state: string;
+    dateTime: any;
 }

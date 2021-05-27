@@ -14,19 +14,19 @@ export const ToolBar = ({ handleDiscard }: ToolBarProps) => {
         <div className="py-2 px-4 bg-blueGray-200 sticky top-0 z-30">
             <div className="flex flex-row">
                 <div className="mr-auto">
-                    <Button type="red" name="Back" onClick={router.back} />
+                    <Button color="red" name="Back" onClick={router.back} />
                 </div>
                 <div>
                     <Button
-                        type="orange"
+                        color="orange"
                         name="Discard"
                         onClick={handleDiscard}
                     />
                     <a target="_blank" href="/preview-local">
-                        <Button type="blue" name="Live Preview" />
+                        <Button color="blue" name="Live Preview" />
                     </a>
                     <Link href="/editor/race">
-                        <ButtonLink type="green" name="Next" />
+                        <ButtonLink color="green" name="Next" />
                     </Link>
                 </div>
             </div>

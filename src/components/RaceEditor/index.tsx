@@ -14,13 +14,31 @@ type State = RootState & { race: RaceEditorInterface };
 const RaceEditor = () => {
     const dispatch = useDispatch();
     const state = useSelector((state: State) => state.race);
+    const [isLoaded, setIsLoaded] = useState(false);
     const [discardWarning, setDiscardWarning] = useState(false);
 
-    useEffect(() => {}, []);
+    useEffect(() => {
+        const initFromLocalStorage = async () => {
+            const data = localStorage.getItem('raceState');
+            if (data) {
+                const localState: RaceEditorInterface = JSON.parse(data);
+                dispatch(actions.updateState(localState));
+            }
+        };
+        initFromLocalStorage();
+        window.addEventListener('storage', initFromLocalStorage, true);
+        setIsLoaded(true);
+        return () => {
+            setDiscardWarning(false);
+            window.removeEventListener('storage', initFromLocalStorage, true);
+        };
+    }, []);
 
-    // useEffect(() => {
-    //     localStorage.setItem('raceState', JSON.stringify(eventState));
-    // }, [eventState]);
+    useEffect(() => {
+        if (isLoaded) {
+            localStorage.setItem('raceState', JSON.stringify(state));
+        }
+    }, [state]);
 
     const handleDiscard = (confirm?: boolean) => {
         if (confirm === true) {
