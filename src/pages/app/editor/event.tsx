@@ -1,28 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Layout } from '../../../components/Common/Layout';
-
-import {
-    EventDetailsState,
-    EventInterface,
-    RaceEditorState,
-} from '../../../types';
 import { useRouter } from 'next/router';
-import { eventState, raceState, RootState } from '../../../lib/redux/reducers';
 import { useUserEventByIdLazyQuery } from '../../../lib/generated/graphql-frontend';
+import { useSelector } from 'react-redux';
+
+import { Layout } from '../../../components/Common/Layout';
+import { EditEventDescription } from '../../../components/Editor/EditEventDescription';
 import { EditEventDetails } from '../../../components/Editor/EditEventDetails';
-import { EditButton } from '../../../components/Editor/EditButton';
-import { EventRace } from '../../../components/Editor/EventRace';
 import { Section } from '../../../components/Editor/Section';
 import { ViewEventDetails } from '../../../components/Editor/ViewEventDetails';
+import { ViewEventDescription } from '../../../components/Editor/ViewEventDescription';
+import { ViewHeroImage } from '../../../components/Editor/ViewHeroImage';
+import { EditHeroImg } from '../../../components/Editor/EditHeroImg';
+import { ViewRaces } from '../../../components/Editor/ViewRaces';
+import { eventState } from '../../../lib/redux/reducers';
 
-type State = RootState & { event: EventInterface; race: RaceEditorState };
-
-const Create_event = () => {
-    const dispatch = useDispatch();
-    const [editDetails, setEditDetails] = useState(false);
+const EditEvent = () => {
+    const [editDetails, setEditDetails] = useState<boolean>(false);
+    const [editDescription, setEditDescription] = useState<boolean>(false);
+    const [editHeroImg, setEditHeroImg] = useState<boolean>(false);
     const [userEventByID, { data, loading, error, called }] =
-        useUserEventByIdLazyQuery();
+        useUserEventByIdLazyQuery({ fetchPolicy: 'network-only' });
     const router = useRouter();
 
     useEffect(() => {
@@ -40,41 +37,69 @@ const Create_event = () => {
         }
     }, [data, loading, error, called]);
 
-    const handleEventDetailsSave = (eventDetails: EventDetailsState) => {
+    const handleSubmit = async () => {
         setEditDetails(false);
-        console.log(eventDetails);
+        setEditDescription(false);
+        setEditHeroImg(false);
+        if (!data?.userEventByID) return;
+        userEventByID({ variables: { id: data.userEventByID.id } });
     };
 
     if (!called || loading || !data?.userEventByID) return null;
-    const { __typename, ...event } = data.userEventByID;
+    const { __typename, eventDetails, heroImg, races, ...event } =
+        data.userEventByID;
     return (
         <Layout>
             <div className="relative mx-auto flex flex-col items-center max-w-2xl">
-                <div className="bg-white w-full rounded shadow mt-4">
-                    <h2 className="text-center">Event Name</h2>
-                    {editDetails ? (
-                        <EditEventDetails
-                            eventDetails={event}
-                            submitHandler={handleEventDetailsSave}
-                            cancelHandler={() => setEditDetails(false)}
-                        />
-                    ) : (
-                        <ViewEventDetails
-                            eventDetails={event}
-                            editClickHandler={() => setEditDetails(true)}
-                        />
-                    )}
-                    <Section title="Event Description">
-                        <p>Event Description</p>
-                        <EditButton />
+                <div className="bg-white w-full rounded shadow my-4 pb-4">
+                    <h2 className="text-center">{event.name}</h2>
+                    <Section title="Event Details">
+                        {editDetails ? (
+                            <EditEventDetails
+                                eventDetails={event}
+                                submitHandler={handleSubmit}
+                                cancelHandler={() => setEditDetails(false)}
+                            />
+                        ) : (
+                            <ViewEventDetails
+                                eventDetails={event}
+                                editClickHandler={() => setEditDetails(true)}
+                            />
+                        )}
                     </Section>
-
-                    <div className="mt-8">
-                        <h2 className="text-center">Races</h2>
-                        <EventRace />
-                        <EventRace />
-                        <EventRace />
-                    </div>
+                    <Section title="Event Description">
+                        {editDescription ? (
+                            <EditEventDescription
+                                id={event.id}
+                                description={eventDetails}
+                                submitHandler={handleSubmit}
+                                cancelHandler={() => setEditDescription(false)}
+                            />
+                        ) : (
+                            <ViewEventDescription
+                                description={eventDetails}
+                                editClickHandler={() =>
+                                    setEditDescription(true)
+                                }
+                            />
+                        )}
+                    </Section>
+                    <Section title="Hero Image">
+                        {editHeroImg ? (
+                            <EditHeroImg
+                                heroImg={heroImg}
+                                id={event.id}
+                                submitHandler={handleSubmit}
+                                cancelHandler={() => setEditHeroImg(false)}
+                            />
+                        ) : (
+                            <ViewHeroImage
+                                heroImg={heroImg}
+                                editClickHandler={() => setEditHeroImg(true)}
+                            />
+                        )}
+                    </Section>
+                    <ViewRaces races={races} id={event.id} />
                 </div>
             </div>
         </Layout>
@@ -84,10 +109,10 @@ const Create_event = () => {
 export function getStaticProps() {
     return {
         props: {
-            initialReduxState: { ...eventState, ...raceState },
-            reduxReducer: ['event', 'race'],
+            initialReduxState: { ...eventState },
+            reduxReducer: ['event'],
         },
     };
 }
 
-export default Create_event;
+export default EditEvent;

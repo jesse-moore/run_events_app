@@ -1,4 +1,5 @@
 import { Feature, LineString, Point } from 'geojson';
+import { Maybe } from 'graphql/jsutils/Maybe';
 import { RootState } from '../lib/redux/reducers';
 
 export interface EventInterface {
@@ -10,6 +11,14 @@ export interface EventInterface {
     state: string;
     time: string;
     eventDetails: string;
+    modals: {
+        deleteRace: {
+            id: string;
+            name: string;
+            active: boolean;
+            position: { x: number; y: number };
+        };
+    };
 }
 
 export interface MapBoxState {
@@ -27,6 +36,17 @@ export interface Marker extends Feature<Point> {
     };
 }
 
+export interface RaceInput {
+    id: string;
+    name: string;
+    distance: number;
+    eventId: string;
+    points: Marker[];
+    routePoints: Feature<LineString>[];
+    routeStartMarker: Marker;
+    routeEndMarker: Marker;
+}
+
 export type RaceEditorState = RootState & { race: RaceEditorInterface };
 
 export type RaceEditorTools =
@@ -35,7 +55,10 @@ export type RaceEditorTools =
     | 'addWaypoint'
     | 'select';
 export interface RaceEditorInterface {
+    id: string;
     name: string;
+    distance: number;
+    eventId: string;
     points: Marker[];
     routePoints: Feature<LineString>[];
     routeStartMarker: Marker | null;
@@ -72,9 +95,17 @@ export interface EventActionInterface {
 }
 
 export interface EventDetailsState {
+    id: string;
     name: string;
     address: string;
     city: string;
     state: string;
     dateTime: any;
+}
+
+export interface RaceDetails {
+    id: string;
+    name: string;
+    distance: number;
+    route?: Maybe<string>;
 }

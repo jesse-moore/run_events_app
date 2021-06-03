@@ -6,6 +6,7 @@ interface Input {
     title: string;
     value: any;
     required?: boolean;
+    step?: number;
     handleChange: ChangeEventHandler<HTMLInputElement>;
 }
 
@@ -15,6 +16,7 @@ export const Input = ({
     title,
     value,
     required,
+	step,
     handleChange,
 }: Input) => {
     return (
@@ -29,6 +31,8 @@ export const Input = ({
                     onChange={handleChange}
                     required={required}
                     maxLength={50}
+                    min={0}
+					step={step}
                 ></input>
             </label>
         </div>

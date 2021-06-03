@@ -5,7 +5,7 @@ import { Section } from './Section';
 import { EventItem } from './EventItem';
 import { EventDetailsState } from '../../types';
 
-export interface ViewEventDetails {
+interface ViewEventDetails {
     eventDetails: EventDetailsState;
     editClickHandler: React.MouseEventHandler;
 }
@@ -17,7 +17,7 @@ export const ViewEventDetails = ({
     const date = dayjs(eventDetails.dateTime).format('dddd MMMM DD, YYYY');
     const time = dayjs(eventDetails.dateTime).format('HH:mm');
     return (
-        <Section title="Event Details">
+        <>
             <EventItem title="Name" value={name} />
             <EventItem title="Date" value={date} />
             <EventItem title="Time" value={time} />
@@ -25,6 +25,6 @@ export const ViewEventDetails = ({
             <EventItem title="City" value={city} />
             <EventItem title="State" value={state} />
             <EditButton onClick={editClickHandler} />
-        </Section>
+        </>
     );
 };

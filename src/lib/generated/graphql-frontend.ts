@@ -13,6 +13,8 @@ export type Scalars = {
   Int: number;
   Float: number;
   Date: any;
+  FeatureCollectionObject: any;
+  FeatureObject: any;
   /** The `Upload` scalar type represents a file upload. */
   Upload: any;
 };
@@ -28,7 +30,16 @@ export type Event = {
   city: Scalars['String'];
   state: Scalars['String'];
   eventDetails: Scalars['String'];
-  races: Array<Maybe<Race>>;
+  races: Array<Race>;
+};
+
+export type EventDetailsInput = {
+  id: Scalars['String'];
+  name: Scalars['String'];
+  dateTime: Scalars['Date'];
+  address: Scalars['String'];
+  city: Scalars['String'];
+  state: Scalars['String'];
 };
 
 export type EventInput = {
@@ -41,12 +52,20 @@ export type EventInput = {
   eventDetails?: Maybe<Scalars['String']>;
 };
 
+
+
 export type Mutation = {
   __typename?: 'Mutation';
   createUser?: Maybe<User>;
   createEvent?: Maybe<Event>;
   createRace?: Maybe<Race>;
+  deleteEvent?: Maybe<Scalars['String']>;
+  deleteRace?: Maybe<Scalars['String']>;
+  updateRace?: Maybe<Race>;
   fileUpload?: Maybe<Scalars['String']>;
+  saveHeroImg?: Maybe<Event>;
+  saveEventDetails?: Maybe<Event>;
+  saveEventDescription?: Maybe<Event>;
 };
 
 
@@ -56,13 +75,46 @@ export type MutationCreateEventArgs = {
 
 
 export type MutationCreateRaceArgs = {
-  eventId?: Maybe<Scalars['String']>;
-  race?: Maybe<RaceInput>;
+  eventId: Scalars['String'];
+  race: RaceInput;
+};
+
+
+export type MutationDeleteEventArgs = {
+  eventId: Scalars['String'];
+};
+
+
+export type MutationDeleteRaceArgs = {
+  raceId: Scalars['String'];
+};
+
+
+export type MutationUpdateRaceArgs = {
+  raceId: Scalars['String'];
+  raceUpdates: UpdateRaceInput;
 };
 
 
 export type MutationFileUploadArgs = {
   file: Scalars['Upload'];
+};
+
+
+export type MutationSaveHeroImgArgs = {
+  file: Scalars['Upload'];
+  id: Scalars['String'];
+};
+
+
+export type MutationSaveEventDetailsArgs = {
+  eventDetails: EventDetailsInput;
+};
+
+
+export type MutationSaveEventDescriptionArgs = {
+  eventDescription: Scalars['String'];
+  id: Scalars['String'];
 };
 
 export type Query = {
@@ -71,6 +123,7 @@ export type Query = {
   eventBySlug?: Maybe<Event>;
   userEvents: Array<Maybe<Event>>;
   userEventByID?: Maybe<Event>;
+  userRaceByID?: Maybe<Race>;
 };
 
 
@@ -83,19 +136,52 @@ export type QueryUserEventByIdArgs = {
   id: Scalars['String'];
 };
 
+
+export type QueryUserRaceByIdArgs = {
+  id: Scalars['String'];
+};
+
 export type Race = {
   __typename?: 'Race';
-  type?: Maybe<Scalars['String']>;
-  dateTime?: Maybe<Scalars['Date']>;
-  distance?: Maybe<Scalars['Int']>;
-  route?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
+  name: Scalars['String'];
+  distance: Scalars['Int'];
+  route: Route;
+  event: Event;
 };
 
 export type RaceInput = {
-  type?: Maybe<Scalars['String']>;
-  dateTime?: Maybe<Scalars['Date']>;
+  name: Scalars['String'];
+  distance: Scalars['Int'];
+  route: RouteInput;
+};
+
+export type Route = {
+  __typename?: 'Route';
+  points: Scalars['FeatureCollectionObject'];
+  route: Scalars['FeatureCollectionObject'];
+  routeStartMarker?: Maybe<Scalars['FeatureObject']>;
+  routeEndMarker?: Maybe<Scalars['FeatureObject']>;
+};
+
+export type RouteInput = {
+  points: Scalars['FeatureCollectionObject'];
+  route: Scalars['FeatureCollectionObject'];
+  routeStartMarker?: Maybe<Scalars['FeatureObject']>;
+  routeEndMarker?: Maybe<Scalars['FeatureObject']>;
+};
+
+export type UpdateRaceInput = {
+  name?: Maybe<Scalars['String']>;
   distance?: Maybe<Scalars['Int']>;
-  route?: Maybe<Scalars['String']>;
+  route?: Maybe<UpdateRouteInput>;
+};
+
+export type UpdateRouteInput = {
+  points?: Maybe<Scalars['FeatureCollectionObject']>;
+  route?: Maybe<Scalars['FeatureCollectionObject']>;
+  routeStartMarker?: Maybe<Scalars['FeatureObject']>;
+  routeEndMarker?: Maybe<Scalars['FeatureObject']>;
 };
 
 
@@ -128,6 +214,62 @@ export type CreateEventMutation = (
   )> }
 );
 
+export type CreateRaceMutationVariables = Exact<{
+  eventId: Scalars['String'];
+  race: RaceInput;
+}>;
+
+
+export type CreateRaceMutation = (
+  { __typename?: 'Mutation' }
+  & { createRace?: Maybe<(
+    { __typename?: 'Race' }
+    & Pick<Race, 'id' | 'name' | 'distance'>
+    & { route: (
+      { __typename?: 'Route' }
+      & Pick<Route, 'points' | 'route' | 'routeStartMarker' | 'routeEndMarker'>
+    ) }
+  )> }
+);
+
+export type UpdateRaceMutationVariables = Exact<{
+  raceId: Scalars['String'];
+  raceUpdates: UpdateRaceInput;
+}>;
+
+
+export type UpdateRaceMutation = (
+  { __typename?: 'Mutation' }
+  & { updateRace?: Maybe<(
+    { __typename?: 'Race' }
+    & Pick<Race, 'id' | 'name' | 'distance'>
+    & { route: (
+      { __typename?: 'Route' }
+      & Pick<Route, 'points' | 'route' | 'routeStartMarker' | 'routeEndMarker'>
+    ) }
+  )> }
+);
+
+export type DeleteRaceMutationVariables = Exact<{
+  raceId: Scalars['String'];
+}>;
+
+
+export type DeleteRaceMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteRace'>
+);
+
+export type DeleteEventMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type DeleteEventMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteEvent'>
+);
+
 export type UserEventsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -148,7 +290,72 @@ export type UserEventByIdQuery = (
   { __typename?: 'Query' }
   & { userEventByID?: Maybe<(
     { __typename?: 'Event' }
+    & Pick<Event, 'id' | 'name' | 'dateTime' | 'address' | 'city' | 'state' | 'eventDetails' | 'heroImg'>
+    & { races: Array<(
+      { __typename?: 'Race' }
+      & Pick<Race, 'id' | 'name' | 'distance'>
+    )> }
+  )> }
+);
+
+export type UserRaceByIdQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type UserRaceByIdQuery = (
+  { __typename?: 'Query' }
+  & { userRaceByID?: Maybe<(
+    { __typename?: 'Race' }
+    & Pick<Race, 'id' | 'name' | 'distance'>
+    & { route: (
+      { __typename?: 'Route' }
+      & Pick<Route, 'points' | 'route' | 'routeStartMarker' | 'routeEndMarker'>
+    ), event: (
+      { __typename?: 'Event' }
+      & Pick<Event, 'id'>
+    ) }
+  )> }
+);
+
+export type SaveHeroImageMutationVariables = Exact<{
+  id: Scalars['String'];
+  file: Scalars['Upload'];
+}>;
+
+
+export type SaveHeroImageMutation = (
+  { __typename?: 'Mutation' }
+  & { saveHeroImg?: Maybe<(
+    { __typename?: 'Event' }
+    & Pick<Event, 'heroImg'>
+  )> }
+);
+
+export type SaveEventDetailsMutationVariables = Exact<{
+  eventDetails: EventDetailsInput;
+}>;
+
+
+export type SaveEventDetailsMutation = (
+  { __typename?: 'Mutation' }
+  & { saveEventDetails?: Maybe<(
+    { __typename?: 'Event' }
     & Pick<Event, 'id' | 'name' | 'dateTime' | 'address' | 'city' | 'state'>
+  )> }
+);
+
+export type SaveEventDescriptionMutationVariables = Exact<{
+  id: Scalars['String'];
+  eventDescription: Scalars['String'];
+}>;
+
+
+export type SaveEventDescriptionMutation = (
+  { __typename?: 'Mutation' }
+  & { saveEventDescription?: Maybe<(
+    { __typename?: 'Event' }
+    & Pick<Event, 'id' | 'name' | 'dateTime' | 'address' | 'city' | 'state' | 'eventDetails'>
   )> }
 );
 
@@ -228,6 +435,152 @@ export function useCreateEventMutation(baseOptions?: Apollo.MutationHookOptions<
 export type CreateEventMutationHookResult = ReturnType<typeof useCreateEventMutation>;
 export type CreateEventMutationResult = Apollo.MutationResult<CreateEventMutation>;
 export type CreateEventMutationOptions = Apollo.BaseMutationOptions<CreateEventMutation, CreateEventMutationVariables>;
+export const CreateRaceDocument = gql`
+    mutation CreateRace($eventId: String!, $race: RaceInput!) {
+  createRace(eventId: $eventId, race: $race) {
+    id
+    name
+    distance
+    route {
+      points
+      route
+      routeStartMarker
+      routeEndMarker
+    }
+  }
+}
+    `;
+export type CreateRaceMutationFn = Apollo.MutationFunction<CreateRaceMutation, CreateRaceMutationVariables>;
+
+/**
+ * __useCreateRaceMutation__
+ *
+ * To run a mutation, you first call `useCreateRaceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateRaceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createRaceMutation, { data, loading, error }] = useCreateRaceMutation({
+ *   variables: {
+ *      eventId: // value for 'eventId'
+ *      race: // value for 'race'
+ *   },
+ * });
+ */
+export function useCreateRaceMutation(baseOptions?: Apollo.MutationHookOptions<CreateRaceMutation, CreateRaceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateRaceMutation, CreateRaceMutationVariables>(CreateRaceDocument, options);
+      }
+export type CreateRaceMutationHookResult = ReturnType<typeof useCreateRaceMutation>;
+export type CreateRaceMutationResult = Apollo.MutationResult<CreateRaceMutation>;
+export type CreateRaceMutationOptions = Apollo.BaseMutationOptions<CreateRaceMutation, CreateRaceMutationVariables>;
+export const UpdateRaceDocument = gql`
+    mutation UpdateRace($raceId: String!, $raceUpdates: UpdateRaceInput!) {
+  updateRace(raceId: $raceId, raceUpdates: $raceUpdates) {
+    id
+    name
+    distance
+    route {
+      points
+      route
+      routeStartMarker
+      routeEndMarker
+    }
+  }
+}
+    `;
+export type UpdateRaceMutationFn = Apollo.MutationFunction<UpdateRaceMutation, UpdateRaceMutationVariables>;
+
+/**
+ * __useUpdateRaceMutation__
+ *
+ * To run a mutation, you first call `useUpdateRaceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateRaceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateRaceMutation, { data, loading, error }] = useUpdateRaceMutation({
+ *   variables: {
+ *      raceId: // value for 'raceId'
+ *      raceUpdates: // value for 'raceUpdates'
+ *   },
+ * });
+ */
+export function useUpdateRaceMutation(baseOptions?: Apollo.MutationHookOptions<UpdateRaceMutation, UpdateRaceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateRaceMutation, UpdateRaceMutationVariables>(UpdateRaceDocument, options);
+      }
+export type UpdateRaceMutationHookResult = ReturnType<typeof useUpdateRaceMutation>;
+export type UpdateRaceMutationResult = Apollo.MutationResult<UpdateRaceMutation>;
+export type UpdateRaceMutationOptions = Apollo.BaseMutationOptions<UpdateRaceMutation, UpdateRaceMutationVariables>;
+export const DeleteRaceDocument = gql`
+    mutation DeleteRace($raceId: String!) {
+  deleteRace(raceId: $raceId)
+}
+    `;
+export type DeleteRaceMutationFn = Apollo.MutationFunction<DeleteRaceMutation, DeleteRaceMutationVariables>;
+
+/**
+ * __useDeleteRaceMutation__
+ *
+ * To run a mutation, you first call `useDeleteRaceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteRaceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteRaceMutation, { data, loading, error }] = useDeleteRaceMutation({
+ *   variables: {
+ *      raceId: // value for 'raceId'
+ *   },
+ * });
+ */
+export function useDeleteRaceMutation(baseOptions?: Apollo.MutationHookOptions<DeleteRaceMutation, DeleteRaceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteRaceMutation, DeleteRaceMutationVariables>(DeleteRaceDocument, options);
+      }
+export type DeleteRaceMutationHookResult = ReturnType<typeof useDeleteRaceMutation>;
+export type DeleteRaceMutationResult = Apollo.MutationResult<DeleteRaceMutation>;
+export type DeleteRaceMutationOptions = Apollo.BaseMutationOptions<DeleteRaceMutation, DeleteRaceMutationVariables>;
+export const DeleteEventDocument = gql`
+    mutation DeleteEvent($id: String!) {
+  deleteEvent(eventId: $id)
+}
+    `;
+export type DeleteEventMutationFn = Apollo.MutationFunction<DeleteEventMutation, DeleteEventMutationVariables>;
+
+/**
+ * __useDeleteEventMutation__
+ *
+ * To run a mutation, you first call `useDeleteEventMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteEventMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteEventMutation, { data, loading, error }] = useDeleteEventMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteEventMutation(baseOptions?: Apollo.MutationHookOptions<DeleteEventMutation, DeleteEventMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteEventMutation, DeleteEventMutationVariables>(DeleteEventDocument, options);
+      }
+export type DeleteEventMutationHookResult = ReturnType<typeof useDeleteEventMutation>;
+export type DeleteEventMutationResult = Apollo.MutationResult<DeleteEventMutation>;
+export type DeleteEventMutationOptions = Apollo.BaseMutationOptions<DeleteEventMutation, DeleteEventMutationVariables>;
 export const UserEventsDocument = gql`
     query UserEvents {
   userEvents {
@@ -276,6 +629,13 @@ export const UserEventByIdDocument = gql`
     address
     city
     state
+    eventDetails
+    heroImg
+    races {
+      id
+      name
+      distance
+    }
   }
 }
     `;
@@ -307,6 +667,164 @@ export function useUserEventByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type UserEventByIdQueryHookResult = ReturnType<typeof useUserEventByIdQuery>;
 export type UserEventByIdLazyQueryHookResult = ReturnType<typeof useUserEventByIdLazyQuery>;
 export type UserEventByIdQueryResult = Apollo.QueryResult<UserEventByIdQuery, UserEventByIdQueryVariables>;
+export const UserRaceByIdDocument = gql`
+    query UserRaceByID($id: String!) {
+  userRaceByID(id: $id) {
+    id
+    name
+    distance
+    route {
+      points
+      route
+      routeStartMarker
+      routeEndMarker
+    }
+    event {
+      id
+    }
+  }
+}
+    `;
+
+/**
+ * __useUserRaceByIdQuery__
+ *
+ * To run a query within a React component, call `useUserRaceByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUserRaceByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUserRaceByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useUserRaceByIdQuery(baseOptions: Apollo.QueryHookOptions<UserRaceByIdQuery, UserRaceByIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<UserRaceByIdQuery, UserRaceByIdQueryVariables>(UserRaceByIdDocument, options);
+      }
+export function useUserRaceByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UserRaceByIdQuery, UserRaceByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<UserRaceByIdQuery, UserRaceByIdQueryVariables>(UserRaceByIdDocument, options);
+        }
+export type UserRaceByIdQueryHookResult = ReturnType<typeof useUserRaceByIdQuery>;
+export type UserRaceByIdLazyQueryHookResult = ReturnType<typeof useUserRaceByIdLazyQuery>;
+export type UserRaceByIdQueryResult = Apollo.QueryResult<UserRaceByIdQuery, UserRaceByIdQueryVariables>;
+export const SaveHeroImageDocument = gql`
+    mutation SaveHeroImage($id: String!, $file: Upload!) {
+  saveHeroImg(id: $id, file: $file) {
+    heroImg
+  }
+}
+    `;
+export type SaveHeroImageMutationFn = Apollo.MutationFunction<SaveHeroImageMutation, SaveHeroImageMutationVariables>;
+
+/**
+ * __useSaveHeroImageMutation__
+ *
+ * To run a mutation, you first call `useSaveHeroImageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSaveHeroImageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [saveHeroImageMutation, { data, loading, error }] = useSaveHeroImageMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      file: // value for 'file'
+ *   },
+ * });
+ */
+export function useSaveHeroImageMutation(baseOptions?: Apollo.MutationHookOptions<SaveHeroImageMutation, SaveHeroImageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SaveHeroImageMutation, SaveHeroImageMutationVariables>(SaveHeroImageDocument, options);
+      }
+export type SaveHeroImageMutationHookResult = ReturnType<typeof useSaveHeroImageMutation>;
+export type SaveHeroImageMutationResult = Apollo.MutationResult<SaveHeroImageMutation>;
+export type SaveHeroImageMutationOptions = Apollo.BaseMutationOptions<SaveHeroImageMutation, SaveHeroImageMutationVariables>;
+export const SaveEventDetailsDocument = gql`
+    mutation SaveEventDetails($eventDetails: EventDetailsInput!) {
+  saveEventDetails(eventDetails: $eventDetails) {
+    id
+    name
+    dateTime
+    address
+    city
+    state
+  }
+}
+    `;
+export type SaveEventDetailsMutationFn = Apollo.MutationFunction<SaveEventDetailsMutation, SaveEventDetailsMutationVariables>;
+
+/**
+ * __useSaveEventDetailsMutation__
+ *
+ * To run a mutation, you first call `useSaveEventDetailsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSaveEventDetailsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [saveEventDetailsMutation, { data, loading, error }] = useSaveEventDetailsMutation({
+ *   variables: {
+ *      eventDetails: // value for 'eventDetails'
+ *   },
+ * });
+ */
+export function useSaveEventDetailsMutation(baseOptions?: Apollo.MutationHookOptions<SaveEventDetailsMutation, SaveEventDetailsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SaveEventDetailsMutation, SaveEventDetailsMutationVariables>(SaveEventDetailsDocument, options);
+      }
+export type SaveEventDetailsMutationHookResult = ReturnType<typeof useSaveEventDetailsMutation>;
+export type SaveEventDetailsMutationResult = Apollo.MutationResult<SaveEventDetailsMutation>;
+export type SaveEventDetailsMutationOptions = Apollo.BaseMutationOptions<SaveEventDetailsMutation, SaveEventDetailsMutationVariables>;
+export const SaveEventDescriptionDocument = gql`
+    mutation SaveEventDescription($id: String!, $eventDescription: String!) {
+  saveEventDescription(id: $id, eventDescription: $eventDescription) {
+    id
+    name
+    dateTime
+    address
+    city
+    state
+    eventDetails
+  }
+}
+    `;
+export type SaveEventDescriptionMutationFn = Apollo.MutationFunction<SaveEventDescriptionMutation, SaveEventDescriptionMutationVariables>;
+
+/**
+ * __useSaveEventDescriptionMutation__
+ *
+ * To run a mutation, you first call `useSaveEventDescriptionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSaveEventDescriptionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [saveEventDescriptionMutation, { data, loading, error }] = useSaveEventDescriptionMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      eventDescription: // value for 'eventDescription'
+ *   },
+ * });
+ */
+export function useSaveEventDescriptionMutation(baseOptions?: Apollo.MutationHookOptions<SaveEventDescriptionMutation, SaveEventDescriptionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SaveEventDescriptionMutation, SaveEventDescriptionMutationVariables>(SaveEventDescriptionDocument, options);
+      }
+export type SaveEventDescriptionMutationHookResult = ReturnType<typeof useSaveEventDescriptionMutation>;
+export type SaveEventDescriptionMutationResult = Apollo.MutationResult<SaveEventDescriptionMutation>;
+export type SaveEventDescriptionMutationOptions = Apollo.BaseMutationOptions<SaveEventDescriptionMutation, SaveEventDescriptionMutationVariables>;
 export const CreateUserDocument = gql`
     mutation CreateUser {
   createUser {

@@ -55,7 +55,6 @@ export const MarkerOptions = () => {
         e.preventDefault();
         if (!state.marker || !type) return;
         const amenitiesString = amenities.join(',');
-        console.log(type, amenitiesString);
         dispatch(
             actions.updateMarker({
                 amenities: amenitiesString,

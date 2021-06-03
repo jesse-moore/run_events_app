@@ -8,6 +8,42 @@ mutation CreateEvent($event: EventInput!) {
     }
 }
 
+mutation CreateRace($eventId: String!, $race: RaceInput!) {
+    createRace(eventId: $eventId, race: $race) {
+        id
+        name
+        distance
+        route {
+            points
+            route
+            routeStartMarker
+            routeEndMarker
+        }
+    }
+}
+
+mutation UpdateRace($raceId: String!, $raceUpdates: UpdateRaceInput!) {
+    updateRace(raceId: $raceId, raceUpdates: $raceUpdates) {
+        id
+        name
+        distance
+        route {
+            points
+            route
+            routeStartMarker
+            routeEndMarker
+        }
+    }
+}
+
+mutation DeleteRace($raceId: String!) {
+    deleteRace(raceId: $raceId)
+}
+
+mutation DeleteEvent($id: String!) {
+    deleteEvent(eventId: $id)
+}
+
 query UserEvents {
     userEvents {
         id
@@ -27,18 +63,105 @@ query UserEventByID($id: String!) {
         address
         city
         state
+        eventDetails
+        heroImg
+        races {
+            id
+            name
+            distance
+        }
     }
 }
 
-input EventInput {
+query UserRaceByID($id: String!) {
+    userRaceByID(id: $id) {
+        id
+        name
+        distance
+        route {
+            points
+            route
+            routeStartMarker
+            routeEndMarker
+        }
+        event {
+            id
+        }
+    }
+}
+
+mutation SaveHeroImage($id: String!, $file: Upload!) {
+    saveHeroImg(id: $id, file: $file) {
+        heroImg
+    }
+}
+
+mutation SaveEventDetails($eventDetails: EventDetailsInput!) {
+    saveEventDetails(eventDetails: $eventDetails) {
+        id
+        name
+        dateTime
+        address
+        city
+        state
+    }
+}
+
+mutation SaveEventDescription($id: String!, $eventDescription: String!) {
+    saveEventDescription(id: $id, eventDescription: $eventDescription) {
+        id
+        name
+        dateTime
+        address
+        city
+        state
+        eventDetails
+    }
+}
+
+input RouteInput {
+    points: FeatureCollectionObject!
+    route: FeatureCollectionObject!
+    routeStartMarker: FeatureObject!
+    routeEndMarker: FeatureObject!
+}
+
+input RaceInput {
+    name: String!
+    distance: Int!
+    route: RouteInput!
+}
+
+input UpdateRouteInput {
+    points: FeatureCollectionObject
+    route: FeatureCollectionObject
+    routeStartMarker: FeatureObject
+    routeEndMarker: FeatureObject
+}
+
+input UpdateRaceInput {
     name: String
+    distance: Int
+    route: UpdateRouteInput
+}
+
+input EventInput {
+    name: String!
     heroImg: Upload
     dateTime: Date!
-    utcOffset: Int
-    address: String
-    city: String
-    state: String
-    eventDetails: String
+    address: String!
+    city: String!
+    state: String!
+    eventDetails: String!
+}
+
+input EventDetailsInput {
+    id: String!
+    name: String!
+    dateTime: Date!
+    address: String!
+    city: String!
+    state: String!
 }
 
 input HeroImgInput {

@@ -1,9 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Feature, LineString } from 'geojson';
-import { RaceEditorInterface, Marker, RaceEditorTools } from '../../../types';
+import {
+    RaceEditorInterface,
+    Marker,
+    RaceEditorTools,
+    RaceInput,
+} from '../../../types';
 
 const initialState: RaceEditorInterface = {
+    id: '',
     name: '',
+    distance: 0,
+    eventId: '',
     points: [],
     routePoints: [],
     routeStartMarker: null,
@@ -28,6 +36,14 @@ const reducers = {
     updateName: (state: RaceState, action: PayloadAction<string>) => {
         state.name = action.payload;
     },
+    updateDistance: (state: RaceState, action: PayloadAction<string>) => {
+        const distance = parseFloat(action.payload);
+        state.distance = distance;
+    },
+    updateEventId: (state: RaceState, action: PayloadAction<string>) => {
+        state.eventId = action.payload;
+    },
+
     addMarker: (state: RaceState, action: PayloadAction<Marker>) => {
         state.points = [...state.points, action.payload];
     },
@@ -47,11 +63,9 @@ const reducers = {
         const length = state.routePoints.length;
         // if (length > 0) state.routePoints.pop();
         if (length === 1 && state.routeEndMarker) {
-            console.log('ONE');
             state.routeEndMarker = null;
             state.routePoints = [];
         } else if (length === 0 && state.routeStartMarker) {
-            console.log('ZERO');
             state.routeStartMarker = null;
         } else if (length > 1) {
             state.routePoints.pop();
@@ -69,11 +83,8 @@ const reducers = {
     init: () => {
         return initialState;
     },
-    updateState: (
-        _state: RaceState,
-        actions: PayloadAction<RaceEditorInterface>
-    ) => {
-        return actions.payload;
+    updateState: (state: RaceState, actions: PayloadAction<RaceInput>) => {
+        return { ...state, ...actions.payload };
     },
     setToolActive: (
         state: RaceState,
@@ -105,10 +116,6 @@ const reducers = {
             return point.properties.id !== action.payload;
         });
         state.points = newPoints;
-    },
-    test: (state: RaceState, action: PayloadAction<string>) => {
-        console.log(action.payload);
-        return state;
     },
     updateMarker: (
         state: RaceState,

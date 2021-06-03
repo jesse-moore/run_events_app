@@ -23,7 +23,7 @@ export const NarBar = () => {
     };
 
     return (
-        <div className="w-full py-3 px-4 flex flex-row items-center bg-white sticky top-0 z-20">
+        <div className="w-full py-2 px-4 flex flex-row items-center bg-white sticky top-0 z-20">
             <Link href="/">
                 <div className="mr-auto">LOGO</div>
             </Link>

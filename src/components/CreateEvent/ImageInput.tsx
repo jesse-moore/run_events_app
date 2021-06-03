@@ -8,7 +8,7 @@ interface ImageInputInterface {
 }
 
 export const ImageInput = ({ image, handleInput }: ImageInputInterface) => {
-    const { error, src, name, dataURL } = image;
+    const { error, name, dataURL } = image;
     return (
         <>
             <div className="my-2">
@@ -27,15 +27,14 @@ export const ImageInput = ({ image, handleInput }: ImageInputInterface) => {
                 </label>
             </div>
 
-            {src ||
-                (dataURL && name && (
-                    <div>
-                        <div>{image.name}</div>
-                        <div className="w-96 max-h-56 overflow-y-auto">
-                            <img src={src ?? dataURL} alt={name} />
-                        </div>
+            {dataURL && (
+                <div>
+                    <div>{name}</div>
+                    <div className="w-96 max-h-56 overflow-y-auto">
+                        <img src={dataURL} alt={name || 'hero image'} />
                     </div>
-                ))}
+                </div>
+            )}
         </>
     );
 };

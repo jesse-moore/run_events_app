@@ -1,80 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { gpxToGeoJSON } from '../../lib/utils';
-import { ToolBar } from './ToolBar';
-import { DialogModal } from '../Common/DialogModal';
+import React, { FormEventHandler, useState } from 'react';
+import { EditToolBar } from './EditToolBar';
 import { MapEditor } from './MapEditor/';
-import { RaceEditorInterface } from '../../types';
-import { FileInput } from './FileInput';
-import { RootState } from '../../lib/redux/reducers';
-import { actions } from '../../lib/redux/reducers/raceEditor';
+import { DiscardModal } from '../Editor/DiscardModal';
+import { RaceDetailsEdit } from './RaceDetailsEdit';
 
-type State = RootState & { race: RaceEditorInterface };
+interface RaceEditor {
+    handleDiscard: () => void;
+    handleSave: FormEventHandler<HTMLFormElement>;
+}
 
-const RaceEditor = () => {
-    const dispatch = useDispatch();
-    const state = useSelector((state: State) => state.race);
-    const [isLoaded, setIsLoaded] = useState(false);
+const RaceEditor = ({ handleDiscard, handleSave }: RaceEditor) => {
     const [discardWarning, setDiscardWarning] = useState(false);
-
-    useEffect(() => {
-        const initFromLocalStorage = async () => {
-            const data = localStorage.getItem('raceState');
-            if (data) {
-                const localState: RaceEditorInterface = JSON.parse(data);
-                dispatch(actions.updateState(localState));
-            }
-        };
-        initFromLocalStorage();
-        window.addEventListener('storage', initFromLocalStorage, true);
-        setIsLoaded(true);
-        return () => {
-            setDiscardWarning(false);
-            window.removeEventListener('storage', initFromLocalStorage, true);
-        };
-    }, []);
-
-    useEffect(() => {
-        if (isLoaded) {
-            localStorage.setItem('raceState', JSON.stringify(state));
-        }
-    }, [state]);
-
-    const handleDiscard = (confirm?: boolean) => {
-        if (confirm === true) {
-            localStorage.removeItem('raceState');
-            dispatch(actions.init());
-            setDiscardWarning(false);
-        } else {
-            setDiscardWarning(!discardWarning);
-        }
-    };
-
-    const handleFileInput = async ({
-        target,
-    }: {
-        target: HTMLInputElement;
-    }) => {
-        const { files } = target;
-        if (files) {
-            const route = await gpxToGeoJSON(files[0]);
-            console.log(route);
-        }
-    };
 
     return (
         <div className="bg-blueGray-100">
             {discardWarning && (
-                <DialogModal
+                <DiscardModal
                     title="Discard Changes?"
-                    closeHandler={() => handleDiscard()}
-                    confirmHandler={() => handleDiscard(true)}
+                    closeHandler={() => setDiscardWarning(false)}
+                    confirmHandler={handleDiscard}
                 />
             )}
-
-            <ToolBar handleDiscard={() => handleDiscard()} />
-            <FileInput handleInput={handleFileInput} />
+            <EditToolBar handleDiscard={() => setDiscardWarning(true)} />
             <div className="mx-auto h-500 w-full px-8">
+                <RaceDetailsEdit handleSave={handleSave} />
                 <MapEditor />
             </div>
         </div>

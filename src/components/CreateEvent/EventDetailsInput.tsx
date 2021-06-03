@@ -7,7 +7,7 @@ import 'easymde/dist/easymde.min.css';
 
 interface EventDetailsProps {
     value: string;
-    handleChange: any;
+    handleChange: (value: string) => void;
 }
 
 export const EventDetailsInput = ({

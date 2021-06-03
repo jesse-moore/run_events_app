@@ -15,7 +15,6 @@ export const getRoute = async (
     if (res.data.code === 'Ok') {
         return res.data.routes[0].geometry;
     } else {
-        console.log(res.data);
         throw new Error('Failed to match route');
     }
 };

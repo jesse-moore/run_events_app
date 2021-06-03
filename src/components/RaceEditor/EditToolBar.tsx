@@ -5,7 +5,7 @@ interface ToolBarProps {
     handleDiscard: ReactEventHandler<Element>;
 }
 
-export const ToolBar = ({ handleDiscard }: ToolBarProps) => {
+export const EditToolBar = ({ handleDiscard }: ToolBarProps) => {
     return (
         <div className="py-2 px-4 bg-blueGray-200 sticky top-0 z-30">
             <div className="flex flex-row justify-end">
@@ -19,7 +19,7 @@ export const ToolBar = ({ handleDiscard }: ToolBarProps) => {
                         color="green"
                         name="Save"
                         type="submit"
-                        form="eventForm"
+                        form="createRace"
                     />
                 </div>
             </div>
