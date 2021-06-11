@@ -10,8 +10,8 @@
     "scripts": {
         "codegen": "graphql-codegen --config codegen.yml",
         "dev": "next dev",
-        "build": "yarn codegen && next build",
-        "test": "yarn codegen && jest",
+        "build": "next build",
+        "test": "jest",
         "start": "next start",
         "seed": "node src/lib/mysql/seed/index.js"
     },
