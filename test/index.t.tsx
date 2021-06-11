@@ -1,10 +1,10 @@
-import { InMemoryCache, gql } from '@apollo/client'
-import React from 'react'
+import { InMemoryCache, gql } from '@apollo/client';
+import React from 'react';
 // import Index from '../src/pages'
-import renderer from 'react-test-renderer'
-import { MockedProvider } from '@apollo/client/testing'
+import renderer from 'react-test-renderer';
+import { MockedProvider } from '@apollo/client/testing';
 
-const cache = new InMemoryCache()
+const cache = new InMemoryCache();
 cache.writeQuery({
     query: gql`
         query Viewer {
@@ -23,16 +23,13 @@ cache.writeQuery({
             status: 'Healthy',
         },
     },
-})
+});
 
 describe('Index', () => {
     it('renders the html we want', async () => {
-		// console.log(process.env)
         const component = renderer.create(
-            <MockedProvider cache={cache}>
-                {/* <Index /> */}
-            </MockedProvider>
-        )
-        expect(component.toJSON()).toMatchSnapshot()
-    })
-})
+            <MockedProvider cache={cache}>{/* <Index /> */}</MockedProvider>
+        );
+        expect(component.toJSON()).toMatchSnapshot();
+    });
+});

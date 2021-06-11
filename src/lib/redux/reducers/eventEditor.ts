@@ -17,11 +17,26 @@ const initialState: EventInterface = {
     state: '',
     time: dayjs('01/01/2021 12:00').format('HH:mm'),
     eventDetails: '',
+    slug: '',
+    errors: {
+        slug: '',
+    },
+    modals: {
+        deleteRace: {
+            id: '',
+            name: '',
+            active: false,
+            position: { x: 0, y: 0 },
+        },
+    },
 };
 
 const reducers = {
     updateName: (state: EventInterface, action: PayloadAction<string>) => {
         state.name = action.payload;
+    },
+    updateSlug: (state: EventInterface, action: PayloadAction<string>) => {
+        state.slug = action.payload;
     },
     updateDate: (state: EventInterface, action: PayloadAction<string>) => {
         state.date = action.payload;
@@ -37,6 +52,9 @@ const reducers = {
     },
     updateState: (state: EventInterface, action: PayloadAction<string>) => {
         state.state = action.payload;
+    },
+    updateSlugError: (state: EventInterface, action: PayloadAction<string>) => {
+        state.errors.slug = action.payload;
     },
     updateHeroImg: (
         state: EventInterface,
@@ -58,6 +76,31 @@ const reducers = {
     },
     init: () => {
         return initialState;
+    },
+    deleteRace: (
+        state: EventInterface,
+        action: PayloadAction<{
+            id: string;
+            name: string;
+            x: number;
+            y: number;
+        }>
+    ) => {
+        const { id, name, x, y } = action.payload;
+        state.modals.deleteRace = {
+            active: true,
+            id,
+            name,
+            position: { x, y },
+        };
+    },
+    closeDeleteRace: (state: EventInterface) => {
+        state.modals.deleteRace = {
+            active: false,
+            id: '',
+            name: '',
+            position: { x: 0, y: 0 },
+        };
     },
 };
 

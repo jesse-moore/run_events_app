@@ -1,14 +1,4 @@
-interface ProcessImageResult {
-    name: string;
-    size: number;
-    dataURL: string | null;
-    src: string | null;
-    error: string | null;
-}
-
-export const imageToDataURL = (
-    input: File | null
-): Promise<ProcessImageResult> => {
+export const imageToDataURL = (input: File | null): Promise<string> => {
     return new Promise((resolve, reject) => {
         if (!input) reject({ error: 'Invalid input' });
         try {
@@ -23,13 +13,7 @@ export const imageToDataURL = (
                 reader.onload = function ({ target }) {
                     if (target) {
                         const result = target?.result as string;
-                        resolve({
-                            name: input.name,
-                            size: input.size,
-                            dataURL: result,
-                            src: null,
-                            error: null,
-                        });
+                        resolve(result);
                     } else {
                         reject({ error: 'Could not read image file' });
                     }

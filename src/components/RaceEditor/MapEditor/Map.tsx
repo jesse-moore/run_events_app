@@ -1,40 +1,46 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import mapboxgl, { EventData, LngLat, MapMouseEvent } from 'mapbox-gl';
+import mapboxgl from 'mapbox-gl';
 
-import { coordsToRouteFeature } from '../../../lib/utils';
+import { createMarker } from '../../../lib/utils';
 import {
     initMap,
     setPoints,
     setRoutePoints,
+    setStartPoint,
+    setEndPoint,
     removeMap,
+    getBounds,
 } from '../../../lib/mapBox/';
 
 import { RaceEditorState } from '../../../types';
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_KEY || '';
 
-interface MapboxMapProps {
-    canvasClickHandler: (event?: MapMouseEvent & EventData) => void;
-    setMovedPoint: Dispatch<SetStateAction<{ coords: number[]; id: string }>>;
-}
-
-export const MapboxMap = ({
-    canvasClickHandler,
-    setMovedPoint,
-}: MapboxMapProps) => {
+export const MapboxMap = () => {
     const state = useSelector((state: RaceEditorState) => state.race);
-    const { points, routePoints } = state;
+    const { points, routePoints, routeStartMarker, routeEndMarker } = state;
     const mapContainer = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (!mapContainer.current) return; // initialize map only once
+        if (!mapContainer.current) return;
+        let bounds: mapboxgl.LngLatBounds | undefined = undefined;
+        if (routePoints.length) {
+            bounds = getBounds(routePoints);
+        }
         initMap({
-            center: [-94.115251, 36.184605],
-            container: mapContainer.current,
-            zoom: 14,
-            canvasClickHandler: canvasClickHandler,
-            setMovedPoint: setMovedPoint,
+            options: {
+                center: [-94.115251, 36.184605],
+                container: mapContainer.current,
+                zoom: 14,
+                bounds,
+            },
+            state: {
+                points,
+                routePoints,
+                startPoint: routeStartMarker || undefined,
+                endPoint: routeEndMarker || undefined,
+            },
         });
         return () => {
             removeMap();
@@ -46,8 +52,17 @@ export const MapboxMap = ({
     }, [points]);
 
     useEffect(() => {
-        const newRoute = coordsToRouteFeature(routePoints);
-        setRoutePoints(newRoute);
+        const marker = routeStartMarker || createMarker();
+        setStartPoint(marker);
+    }, [routeStartMarker]);
+
+    useEffect(() => {
+        const marker = routeEndMarker || createMarker();
+        setEndPoint(marker);
+    }, [routeEndMarker]);
+
+    useEffect(() => {
+        setRoutePoints(routePoints);
     }, [routePoints]);
 
     return (

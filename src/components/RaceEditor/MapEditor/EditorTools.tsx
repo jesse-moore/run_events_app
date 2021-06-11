@@ -1,9 +1,9 @@
 import React, { MouseEventHandler } from 'react';
 import { useDispatch } from 'react-redux';
-import { actions } from '../../../lib/redux/reducers/raceEditor';
+import { actions, RaceState } from '../../../lib/redux/reducers/raceEditor';
 
 interface EditorToolsProps {
-    tools: { [k: string]: boolean };
+    tools: RaceState['tools'];
 }
 
 export const EditorTools = ({ tools }: EditorToolsProps) => {
@@ -11,29 +11,56 @@ export const EditorTools = ({ tools }: EditorToolsProps) => {
     return (
         <div className="mt-4 bg-blueGray-200 py-4">
             <div className="w-full flex flex-row justify-center">
-                <ToolGroup onClick={() => dispatch(actions.setSelectActive())}>
+                <ToolGroup
+                    onClick={() => dispatch(actions.setToolActive('select'))}
+                >
                     <ToolPrimary isActive={tools.select} name="Select" />
                 </ToolGroup>
-                <ToolGroup
-                    onClick={() => dispatch(actions.setAddMarkerActive())}
-                >
-                    <ToolPrimary isActive={tools.addMarker} name="Add Marker" />
-                    {/* <ToolSecondary
-                        name="Undo"
-                        onClick={() => dispatch(actions.undoAddMarker())}
-                    /> */}
-                </ToolGroup>
-                <ToolGroup
-                    onClick={() => dispatch(actions.setCreateRouteActive())}
-                >
+                {/* <ToolGroup onClick={() => dispatch(actions.setSelectActive())}>
+                    <ToolPrimary isActive={tools.select} name="Move Feature" />
+                </ToolGroup> */}
+                <ToolGroup>
                     <ToolPrimary
-                        isActive={tools.createRoute}
-                        name="Create Route"
+                        isActive={tools.addMarker || tools.moveMarker}
+                        name="Marker"
+                        onClick={() =>
+                            dispatch(actions.setToolActive('addMarker'))
+                        }
                     />
-                    {/* <ToolSecondary
+                    <ToolSecondary
+                        isActive={tools.addMarker}
+                        name="Add"
+                        onClick={() =>
+                            dispatch(actions.setToolActive('addMarker'))
+                        }
+                    />
+                    <ToolSecondary
+                        name="Move"
+                        isActive={tools.moveMarker}
+                        onClick={() =>
+                            dispatch(actions.setToolActive('moveMarker'))
+                        }
+                    />
+                </ToolGroup>
+                <ToolGroup>
+                    <ToolPrimary
+                        isActive={tools.addWaypoint}
+                        name="Route"
+                        onClick={() =>
+                            dispatch(actions.setToolActive('addWaypoint'))
+                        }
+                    />
+                    <ToolSecondary
+                        name="Add Waypoint"
+                        isActive={tools.addWaypoint}
+                        onClick={() =>
+                            dispatch(actions.setToolActive('addWaypoint'))
+                        }
+                    />
+                    <ToolSecondary
                         name="Undo"
-                        onClick={() => console.log('UNDO ROUTE')}
-                    /> */}
+                        onClick={() => dispatch(actions.undoAddRoutePoint())}
+                    />
                 </ToolGroup>
             </div>
         </div>

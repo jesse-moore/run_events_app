@@ -1,12 +1,11 @@
-import { ReactEventHandler } from 'react'
-import { Button } from './Button'
+import { Button } from './Button';
 
 interface ModalProps {
-    children?: React.ReactNode
-    title: string
-    closeHandler: React.MouseEventHandler<HTMLDivElement>
-    confirmHandler: React.MouseEventHandler<HTMLDivElement>
-    loadingOverlay?: React.ReactNode
+    children?: React.ReactNode;
+    title: string;
+    closeHandler: React.MouseEventHandler<HTMLDivElement>;
+    confirmHandler: React.MouseEventHandler<HTMLDivElement>;
+    loadingOverlay?: React.ReactNode;
 }
 
 export function DialogModal({
@@ -31,17 +30,17 @@ export function DialogModal({
                     <div className="flex flex-row justify-center mb-6">
                         <Button
                             name="Discard Changes"
-                            type="red"
-                            onClick={confirmHandler}
+                            color="red"
+                            onClick={() => confirmHandler}
                         />
                         <Button
                             name="Cancel"
-                            type="blue"
-                            onClick={closeHandler}
+                            color="blue"
+                            onClick={() => closeHandler}
                         />
                     </div>
                 </div>
             </div>
         </div>
-    )
+    );
 }

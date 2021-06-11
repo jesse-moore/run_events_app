@@ -8,6 +8,7 @@ interface HeroProps {
         name: string | null;
         size: number | null;
         src: string | null;
+        dataURL: string | null;
     };
     address: string;
     city: string;

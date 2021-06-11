@@ -1,17 +1,18 @@
-import React, { ReactNode, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import Router from 'next/router'
-import { getUser } from '../../lib/cognito'
-import { RootState } from '../../lib/redux/reducers'
-import { signin } from '../../lib/redux/reducers/user'
-import { LoginModal } from '../LoginModal'
-import { NarBar } from './NarBar'
-import { SignupModal } from '../SignupModal'
+import React, { ReactNode, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import Router from 'next/router';
+import { getUser } from '../../lib/cognito';
+import { RootState } from '../../lib/redux/reducers';
+import { signin } from '../../lib/redux/reducers/user';
+import { LoginModal } from '../LoginModal';
+import { NarBar } from './NarBar';
+import { SignupModal } from '../SignupModal';
+import { UserDataInterface } from '../../types';
 
 interface LayoutProps {
-    children: ReactNode
-    authenticatedRoute?: boolean
-    redirectAuthenticated?: string
+    children: ReactNode;
+    authenticatedRoute?: boolean;
+    redirectAuthenticated?: string;
 }
 
 export const Layout = ({
@@ -19,33 +20,37 @@ export const Layout = ({
     authenticatedRoute,
     redirectAuthenticated,
 }: LayoutProps) => {
-    const dispatch = useDispatch()
+    const [user, setUser] = useState<UserDataInterface | null>(null);
+    const [isLoaded, setIsLoaded] = useState(false);
+    const dispatch = useDispatch();
     useEffect(() => {
         const init = async () => {
-            const user = await getUser()
-            if (user) dispatch(signin(user))
+            const user = await getUser();
+            if (user) dispatch(signin(user));
+            setUser(user);
             if (!user && authenticatedRoute) {
-                return Router.push('/')
+                return Router.push('/');
             }
             if (user && redirectAuthenticated) {
-                return Router.replace(redirectAuthenticated)
+                return Router.replace(redirectAuthenticated);
             }
-        }
-        init()
-    }, [])
-    const { user } = useSelector((state: RootState) => state.user)
-    const { modals } = useSelector((state: RootState) => state.ui)
-    if ((!user && authenticatedRoute) || (user && redirectAuthenticated))
-        return null
+            setIsLoaded(true);
+        };
+        init();
+    }, []);
+    const { modals } = useSelector((state: RootState) => state.ui);
+    if (!user && authenticatedRoute) return null;
     return (
-        <div className="relative">
-            <NarBar user={user} />
-            {children}
-            <footer className="text-center h-24 flex justify-center items-center">
-                <div>FOOTER</div>
+        <div className="relative flex flex-col min-h-screen">
+            <NarBar />
+            <div className="bg-blueGray-100 flex-grow">
+                {isLoaded && children}
+            </div>
+            <footer className="text-center flex items-center justify-center py-6">
+                {/* <div>FOOTER</div> */}
             </footer>
             {modals.signupForm ? <SignupModal /> : null}
             {modals.loginForm ? <LoginModal /> : null}
         </div>
-    )
-}
+    );
+};
