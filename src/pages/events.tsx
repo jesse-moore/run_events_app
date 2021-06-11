@@ -7,7 +7,7 @@ import { useEventsQuery, EventsQuery } from '../lib/generated/graphql-frontend';
 const domain = process.env.NEXT_PUBLIC_DOMAIN;
 
 const Events = () => {
-    const { data, error, loading } = useEventsQuery();
+    const { data } = useEventsQuery();
 
     return (
         <Layout>
