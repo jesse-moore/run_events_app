@@ -11,6 +11,18 @@ export interface EventInterface {
     state: string;
     time: string;
     eventDetails: string;
+    slug: string;
+    errors: {
+        slug?: string;
+        name?: string;
+        heroImg?: HeroImg;
+        date?: string;
+        address?: string;
+        city?: string;
+        state?: string;
+        time?: string;
+        eventDetails?: string;
+    };
     modals: {
         deleteRace: {
             id: string;
@@ -45,6 +57,15 @@ export interface RaceInput {
     routePoints: Feature<LineString>[];
     routeStartMarker: Marker;
     routeEndMarker: Marker;
+}
+
+export interface RaceLocalPreview {
+    name: string;
+    distance: number;
+    points: Marker[];
+    routePoints: Feature<LineString>[];
+    routeStartMarker: Marker | null;
+    routeEndMarker: Marker | null;
 }
 
 export type RaceEditorState = RootState & { race: RaceEditorInterface };
@@ -101,6 +122,7 @@ export interface EventDetailsState {
     city: string;
     state: string;
     dateTime: any;
+    slug: string;
 }
 
 export interface RaceDetails {

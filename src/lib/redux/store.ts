@@ -1,6 +1,5 @@
 import {
     configureStore,
-    DeepPartial,
     Store,
     ReducersMapObject,
     Reducer,

@@ -21,6 +21,7 @@ export const Layout = ({
     redirectAuthenticated,
 }: LayoutProps) => {
     const [user, setUser] = useState<UserDataInterface | null>(null);
+    const [isLoaded, setIsLoaded] = useState(false);
     const dispatch = useDispatch();
     useEffect(() => {
         const init = async () => {
@@ -33,18 +34,20 @@ export const Layout = ({
             if (user && redirectAuthenticated) {
                 return Router.replace(redirectAuthenticated);
             }
+            setIsLoaded(true);
         };
         init();
     }, []);
     const { modals } = useSelector((state: RootState) => state.ui);
-    if ((!user && authenticatedRoute) || (user && redirectAuthenticated))
-        return null;
+    if (!user && authenticatedRoute) return null;
     return (
         <div className="relative flex flex-col min-h-screen">
             <NarBar />
-            <div className="bg-blueGray-100 flex-grow">{children}</div>
+            <div className="bg-blueGray-100 flex-grow">
+                {isLoaded && children}
+            </div>
             <footer className="text-center flex items-center justify-center py-6">
-                <div>FOOTER</div>
+                {/* <div>FOOTER</div> */}
             </footer>
             {modals.signupForm ? <SignupModal /> : null}
             {modals.loginForm ? <LoginModal /> : null}

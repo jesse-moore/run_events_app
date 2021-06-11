@@ -52,6 +52,24 @@ query UserEvents {
         address
         city
         state
+        slug
+    }
+}
+
+query Events {
+    events {
+        id
+        name
+        dateTime
+        address
+        city
+        state
+        slug
+        races {
+            id
+            name
+            distance
+        }
     }
 }
 
@@ -65,6 +83,7 @@ query UserEventByID($id: String!) {
         state
         eventDetails
         heroImg
+        slug
         races {
             id
             name
@@ -90,6 +109,10 @@ query UserRaceByID($id: String!) {
     }
 }
 
+query CheckSubdomain($subdomain: String!) {
+    checkSubdomain(subdomain: $subdomain)
+}
+
 mutation SaveHeroImage($id: String!, $file: Upload!) {
     saveHeroImg(id: $id, file: $file) {
         heroImg
@@ -104,6 +127,7 @@ mutation SaveEventDetails($eventDetails: EventDetailsInput!) {
         address
         city
         state
+        slug
     }
 }
 
@@ -153,6 +177,7 @@ input EventInput {
     city: String!
     state: String!
     eventDetails: String!
+    slug: String!
 }
 
 input EventDetailsInput {
@@ -162,6 +187,7 @@ input EventDetailsInput {
     address: String!
     city: String!
     state: String!
+    slug: String!
 }
 
 input HeroImgInput {

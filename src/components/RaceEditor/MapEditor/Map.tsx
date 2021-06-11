@@ -10,6 +10,7 @@ import {
     setStartPoint,
     setEndPoint,
     removeMap,
+    getBounds,
 } from '../../../lib/mapBox/';
 
 import { RaceEditorState } from '../../../types';
@@ -22,12 +23,17 @@ export const MapboxMap = () => {
     const mapContainer = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (!mapContainer.current) return; // initialize map only once
+        if (!mapContainer.current) return;
+        let bounds: mapboxgl.LngLatBounds | undefined = undefined;
+        if (routePoints.length) {
+            bounds = getBounds(routePoints);
+        }
         initMap({
             options: {
                 center: [-94.115251, 36.184605],
                 container: mapContainer.current,
                 zoom: 14,
+                bounds,
             },
             state: {
                 points,

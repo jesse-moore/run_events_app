@@ -1,11 +1,13 @@
-import Link from 'next/link'
-import { Button } from './Common/Button'
-import { ButtonLink } from './Common/ButtonLink'
+import Link from 'next/link';
+import { Button } from './Common/Button';
+import { ButtonLink } from './Common/ButtonLink';
+
+const domain = process.env.NEXT_PUBLIC_DOMAIN;
 
 export const Hero = () => {
-    const opacity = 0.6
-    const rgb = 50
-    const overlay = `rgba(${rgb}, ${rgb}, ${rgb}, ${opacity})`
+    const opacity = 0.6;
+    const rgb = 50;
+    const overlay = `rgba(${rgb}, ${rgb}, ${rgb}, ${opacity})`;
     return (
         <div
             className="h-500 flex flex-col relative"
@@ -25,11 +27,13 @@ export const Hero = () => {
                 className="text-xl absolute top-1/2"
                 style={{ transform: 'translate(20%, -50%)' }}
             >
-                <Link href="/editor/event">
-                    <ButtonLink name="Create Event" type="primary" />
+                <Link href="/preview/create-event">
+                    <ButtonLink name="Create Event" color="primary" />
                 </Link>
-                <Button name="See Demo" type="primary" />
+                <a target="_blank" href={`http://demo.${domain}`}>
+                    <Button name="See Demo" color="primary" />
+                </a>
             </div>
         </div>
-    )
-}
+    );
+};

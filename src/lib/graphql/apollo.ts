@@ -17,7 +17,7 @@ export type ResolverContext = {
 };
 
 const authLink = setContext((_, { headers }) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         // get the authentication token from local storage if it exists
         getJWT()
             .then((token) => {
@@ -29,7 +29,7 @@ const authLink = setContext((_, { headers }) => {
                     },
                 });
             })
-            .catch((err) => {
+            .catch((_err) => {
                 resolve(null);
             });
     });
@@ -37,10 +37,11 @@ const authLink = setContext((_, { headers }) => {
 
 const uploadLink = createUploadLink({
     uri: 'http://localhost:3001/graphql',
+    // uri: 'http://api.rmap.site/graphql',
     credentials: 'same-origin',
 });
 
-function createApolloClient(context?: ResolverContext) {
+function createApolloClient(_context?: ResolverContext) {
     return new ApolloClient({
         ssrMode: typeof window === 'undefined',
         link: authLink.concat(uploadLink),

@@ -7,6 +7,7 @@ const eventForCardObj = {
     city: '',
     state: '',
     id: '',
+    slug: '',
 };
 
 export const eventForCard = (
@@ -20,6 +21,7 @@ export const eventForCard = (
         const eventForCard = Object.assign({}, eventForCardObj);
         eventForCard.id = event.id;
         if (event.name) eventForCard.name = event.name;
+        if (event.slug) eventForCard.slug = event.slug;
         if (event.dateTime) {
             const date = dayjs(event.dateTime).format('dddd MMMM DD, YYYY');
             eventForCard.date = date;

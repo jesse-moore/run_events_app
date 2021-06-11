@@ -5,7 +5,6 @@ import { toggleSignupForm, toggleLoginForm } from '../../lib/redux/reducers/ui';
 import { signout } from '../../lib/redux/reducers/user';
 import { logout } from '../../lib/cognito';
 import { apolloClient } from '../../lib/graphql/apollo';
-import { UserDataInterface } from '../../types';
 import { Button } from './Button';
 import { Dispatch } from 'react';
 import { ButtonLink } from './ButtonLink';
@@ -25,7 +24,7 @@ export const NarBar = () => {
     return (
         <div className="w-full py-2 px-4 flex flex-row items-center bg-white sticky top-0 z-20">
             <Link href="/">
-                <div className="mr-auto">LOGO</div>
+                <div className="mr-auto text-xl cursor-pointer px-2 py-2">rMap</div>
             </Link>
 
             <a href="/events">

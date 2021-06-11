@@ -2,6 +2,7 @@ import { Feature, LineString } from 'geojson';
 import mapboxgl, {
     EventData,
     GeoJSONSource,
+    LngLatBounds,
     LngLatLike,
     Map,
     MapMouseEvent,
@@ -22,19 +23,24 @@ interface InitMapInterface {
         center?: LngLatLike;
         container: HTMLElement;
         zoom?: number;
+        bounds?: LngLatBounds;
     };
     state?: MapBoxState;
 }
 
 export const initMap = ({ options, state }: InitMapInterface) => {
     if (map) return;
-    const { center = [0, 0], zoom = 10, container } = options;
+    const { center = [0, 0], zoom = 10, container, bounds } = options;
 
     map = new mapboxgl.Map({
         container,
         style: 'mapbox://styles/mapbox/streets-v11',
         center,
         zoom,
+        bounds,
+        fitBoundsOptions: {
+            padding: 50,
+        },
     });
 
     map.on('click', async function (e: MapMouseEvent & EventData) {
@@ -127,7 +133,7 @@ export const initMap = ({ options, state }: InitMapInterface) => {
         }
     });
 
-    map.on('touchstart', 'point', function (e) {
+    map.on('touchstart', 'point', function () {
         // if (e.points.length !== 1) return;
         // // Prevent the default map drag behavior.
         // e.preventDefault();
@@ -233,4 +239,27 @@ export const setRoutePoints = (routePoints: Feature<LineString>[]) => {
     } else {
         pointsSrc.setData({ type: 'FeatureCollection', features: routePoints });
     }
+};
+
+export const getBounds = (lineStringArr: Feature<LineString>[]) => {
+    const coordinates: [number, number][] = [];
+    lineStringArr.forEach((feature) => {
+        feature.geometry.coordinates.forEach((coord) => {
+            const [lng, lat] = coord;
+            coordinates.push([lng, lat]);
+        });
+    });
+    const bounds = coordinates.reduce(function (bounds, position) {
+        return bounds.extend(position);
+    }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
+    return bounds;
+};
+export const isLoaded = (): boolean => {
+    if (!map) return false;
+    return map.loaded();
+};
+
+export const setBounds = (bounds: mapboxgl.LngLatBounds) => {
+    if (!map) return;
+    map.fitBounds(bounds, { padding: 50 });
 };

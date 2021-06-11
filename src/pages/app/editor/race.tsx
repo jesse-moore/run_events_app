@@ -4,10 +4,10 @@ import {
     useUserRaceByIdLazyQuery,
     useUpdateRaceMutation,
 } from '../../../lib/generated/graphql-frontend';
-import { eventState, raceState, RootState } from '../../../lib/redux/reducers';
+import { raceState, RootState } from '../../../lib/redux/reducers';
 import { Layout } from '../../../components/Common/Layout';
 import RaceEditor from '../../../components/RaceEditor';
-import { EventInterface, RaceEditorState } from '../../../types';
+import { RaceEditorState } from '../../../types';
 import { useRouter } from 'next/router';
 import { actions } from '../../../lib/redux/reducers/raceEditor';
 
@@ -82,7 +82,7 @@ const EditRace = () => {
             },
         };
         try {
-            await updateRace({ 
+            await updateRace({
                 variables: {
                     raceUpdates: raceInput,
                     raceId: state.id,

@@ -30,6 +30,7 @@ export type Event = {
   city: Scalars['String'];
   state: Scalars['String'];
   eventDetails: Scalars['String'];
+  slug: Scalars['String'];
   races: Array<Race>;
 };
 
@@ -40,9 +41,11 @@ export type EventDetailsInput = {
   address: Scalars['String'];
   city: Scalars['String'];
   state: Scalars['String'];
+  slug: Scalars['String'];
 };
 
 export type EventInput = {
+  slug: Scalars['String'];
   name: Scalars['String'];
   heroImg?: Maybe<Scalars['Upload']>;
   dateTime: Scalars['String'];
@@ -124,6 +127,7 @@ export type Query = {
   userEvents: Array<Maybe<Event>>;
   userEventByID?: Maybe<Event>;
   userRaceByID?: Maybe<Race>;
+  checkSubdomain: Scalars['Boolean'];
 };
 
 
@@ -139,6 +143,11 @@ export type QueryUserEventByIdArgs = {
 
 export type QueryUserRaceByIdArgs = {
   id: Scalars['String'];
+};
+
+
+export type QueryCheckSubdomainArgs = {
+  subdomain: Scalars['String'];
 };
 
 export type Race = {
@@ -277,7 +286,22 @@ export type UserEventsQuery = (
   { __typename?: 'Query' }
   & { userEvents: Array<Maybe<(
     { __typename?: 'Event' }
-    & Pick<Event, 'id' | 'name' | 'dateTime' | 'address' | 'city' | 'state'>
+    & Pick<Event, 'id' | 'name' | 'dateTime' | 'address' | 'city' | 'state' | 'slug'>
+  )>> }
+);
+
+export type EventsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type EventsQuery = (
+  { __typename?: 'Query' }
+  & { events: Array<Maybe<(
+    { __typename?: 'Event' }
+    & Pick<Event, 'id' | 'name' | 'dateTime' | 'address' | 'city' | 'state' | 'slug'>
+    & { races: Array<(
+      { __typename?: 'Race' }
+      & Pick<Race, 'id' | 'name' | 'distance'>
+    )> }
   )>> }
 );
 
@@ -290,7 +314,7 @@ export type UserEventByIdQuery = (
   { __typename?: 'Query' }
   & { userEventByID?: Maybe<(
     { __typename?: 'Event' }
-    & Pick<Event, 'id' | 'name' | 'dateTime' | 'address' | 'city' | 'state' | 'eventDetails' | 'heroImg'>
+    & Pick<Event, 'id' | 'name' | 'dateTime' | 'address' | 'city' | 'state' | 'eventDetails' | 'heroImg' | 'slug'>
     & { races: Array<(
       { __typename?: 'Race' }
       & Pick<Race, 'id' | 'name' | 'distance'>
@@ -318,6 +342,16 @@ export type UserRaceByIdQuery = (
   )> }
 );
 
+export type CheckSubdomainQueryVariables = Exact<{
+  subdomain: Scalars['String'];
+}>;
+
+
+export type CheckSubdomainQuery = (
+  { __typename?: 'Query' }
+  & Pick<Query, 'checkSubdomain'>
+);
+
 export type SaveHeroImageMutationVariables = Exact<{
   id: Scalars['String'];
   file: Scalars['Upload'];
@@ -341,7 +375,7 @@ export type SaveEventDetailsMutation = (
   { __typename?: 'Mutation' }
   & { saveEventDetails?: Maybe<(
     { __typename?: 'Event' }
-    & Pick<Event, 'id' | 'name' | 'dateTime' | 'address' | 'city' | 'state'>
+    & Pick<Event, 'id' | 'name' | 'dateTime' | 'address' | 'city' | 'state' | 'slug'>
   )> }
 );
 
@@ -590,6 +624,7 @@ export const UserEventsDocument = gql`
     address
     city
     state
+    slug
   }
 }
     `;
@@ -620,6 +655,51 @@ export function useUserEventsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type UserEventsQueryHookResult = ReturnType<typeof useUserEventsQuery>;
 export type UserEventsLazyQueryHookResult = ReturnType<typeof useUserEventsLazyQuery>;
 export type UserEventsQueryResult = Apollo.QueryResult<UserEventsQuery, UserEventsQueryVariables>;
+export const EventsDocument = gql`
+    query Events {
+  events {
+    id
+    name
+    dateTime
+    address
+    city
+    state
+    slug
+    races {
+      id
+      name
+      distance
+    }
+  }
+}
+    `;
+
+/**
+ * __useEventsQuery__
+ *
+ * To run a query within a React component, call `useEventsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useEventsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useEventsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useEventsQuery(baseOptions?: Apollo.QueryHookOptions<EventsQuery, EventsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<EventsQuery, EventsQueryVariables>(EventsDocument, options);
+      }
+export function useEventsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<EventsQuery, EventsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<EventsQuery, EventsQueryVariables>(EventsDocument, options);
+        }
+export type EventsQueryHookResult = ReturnType<typeof useEventsQuery>;
+export type EventsLazyQueryHookResult = ReturnType<typeof useEventsLazyQuery>;
+export type EventsQueryResult = Apollo.QueryResult<EventsQuery, EventsQueryVariables>;
 export const UserEventByIdDocument = gql`
     query UserEventByID($id: String!) {
   userEventByID(id: $id) {
@@ -631,6 +711,7 @@ export const UserEventByIdDocument = gql`
     state
     eventDetails
     heroImg
+    slug
     races {
       id
       name
@@ -713,6 +794,39 @@ export function useUserRaceByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
 export type UserRaceByIdQueryHookResult = ReturnType<typeof useUserRaceByIdQuery>;
 export type UserRaceByIdLazyQueryHookResult = ReturnType<typeof useUserRaceByIdLazyQuery>;
 export type UserRaceByIdQueryResult = Apollo.QueryResult<UserRaceByIdQuery, UserRaceByIdQueryVariables>;
+export const CheckSubdomainDocument = gql`
+    query CheckSubdomain($subdomain: String!) {
+  checkSubdomain(subdomain: $subdomain)
+}
+    `;
+
+/**
+ * __useCheckSubdomainQuery__
+ *
+ * To run a query within a React component, call `useCheckSubdomainQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCheckSubdomainQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCheckSubdomainQuery({
+ *   variables: {
+ *      subdomain: // value for 'subdomain'
+ *   },
+ * });
+ */
+export function useCheckSubdomainQuery(baseOptions: Apollo.QueryHookOptions<CheckSubdomainQuery, CheckSubdomainQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<CheckSubdomainQuery, CheckSubdomainQueryVariables>(CheckSubdomainDocument, options);
+      }
+export function useCheckSubdomainLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CheckSubdomainQuery, CheckSubdomainQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<CheckSubdomainQuery, CheckSubdomainQueryVariables>(CheckSubdomainDocument, options);
+        }
+export type CheckSubdomainQueryHookResult = ReturnType<typeof useCheckSubdomainQuery>;
+export type CheckSubdomainLazyQueryHookResult = ReturnType<typeof useCheckSubdomainLazyQuery>;
+export type CheckSubdomainQueryResult = Apollo.QueryResult<CheckSubdomainQuery, CheckSubdomainQueryVariables>;
 export const SaveHeroImageDocument = gql`
     mutation SaveHeroImage($id: String!, $file: Upload!) {
   saveHeroImg(id: $id, file: $file) {
@@ -756,6 +870,7 @@ export const SaveEventDetailsDocument = gql`
     address
     city
     state
+    slug
   }
 }
     `;

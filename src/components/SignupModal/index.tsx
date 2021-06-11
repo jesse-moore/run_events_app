@@ -15,7 +15,7 @@ import { Modal } from '../Common/Modal';
 import { LoadingBar } from '../Common/LoadingBar';
 
 export function SignupModal() {
-    const [createUser, { data }] = useCreateUserMutation();
+    const [createUser] = useCreateUserMutation();
     const dispatch = useDispatch();
     const [state, dispatchLocal] = useReducer(reducer, initialState);
     const [loading, setLoading] = useState(false);
@@ -44,7 +44,7 @@ export function SignupModal() {
         setLoading(true);
         try {
             setLoadingState('Signing Up');
-            await signup({ email, password })
+            await signup({ email, password });
             setLoadingState('Logging In');
             await login({ email, password });
             const user = await getUser();

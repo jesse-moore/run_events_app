@@ -11,9 +11,17 @@ export const ViewHeroImage = ({ heroImg, editClickHandler }: ViewHeroImage) => {
     return (
         <div>
             <div className="w-full max-h-56 overflow-y-auto">
-                <img src={src} alt="hero image" />
+                {src ? <HeroImg src={src} /> : <NoHeroImg />}
             </div>
             <EditButton onClick={editClickHandler} />
         </div>
     );
+};
+
+const HeroImg = ({ src }: { src: string }) => {
+    return <img src={src} alt="hero image" />;
+};
+
+const NoHeroImg = () => {
+    return <div className="text-center">---- No Hero Image Selected ----</div>;
 };

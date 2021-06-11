@@ -1,5 +1,4 @@
 import React from 'react';
-import { InputMessage } from '../Common/InputMessage';
 
 interface FileInputInterface {
     handleInput: any;

@@ -5,6 +5,7 @@ import {
     Marker,
     RaceEditorTools,
     RaceInput,
+    RaceLocalPreview,
 } from '../../../types';
 
 const initialState: RaceEditorInterface = {
@@ -37,8 +38,8 @@ const reducers = {
         state.name = action.payload;
     },
     updateDistance: (state: RaceState, action: PayloadAction<string>) => {
-        const distance = parseFloat(action.payload);
-        state.distance = distance;
+        const distance = parseFloat(action.payload) * 100;
+        state.distance = Number(distance.toFixed(0));
     },
     updateEventId: (state: RaceState, action: PayloadAction<string>) => {
         state.eventId = action.payload;
@@ -85,6 +86,12 @@ const reducers = {
     },
     updateState: (state: RaceState, actions: PayloadAction<RaceInput>) => {
         return { ...state, ...actions.payload };
+    },
+    initStateFromLocal: (
+        _state: RaceState,
+        actions: PayloadAction<RaceLocalPreview>
+    ) => {
+        return { ...initialState, ...actions.payload };
     },
     setToolActive: (
         state: RaceState,

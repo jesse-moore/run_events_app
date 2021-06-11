@@ -35,12 +35,6 @@ module.exports = {
                 400: '400px',
                 350: '350px',
             },
-            // keyframes: {
-            //     slide_inf: {
-            //         '0%': { transform: 'left: 0' },
-            //         '100%': { transform: 'left: 12px' },
-            //     },
-            // },
             animation: {
                 'slide-repeat-sm': 'slide-repeat-sm 1s linear infinite',
             },

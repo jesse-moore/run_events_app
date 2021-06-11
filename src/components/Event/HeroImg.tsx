@@ -37,7 +37,7 @@ export const HeroImg = ({ heroImg, children }: HeroImageProps) => {
                 className="rounded-sm h-80 text-center pt-4 text-gray-100"
                 style={{
                     background: `linear-gradient(${overlay}, ${overlay}),
-				url(${src}) center center`,
+				url(${src}) center center no-repeat`,
                 }}
             >
                 {children}

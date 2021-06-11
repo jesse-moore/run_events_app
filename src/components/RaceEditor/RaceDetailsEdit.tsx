@@ -7,7 +7,7 @@ import { RaceEditorInterface } from '../../types';
 import { Input } from '../Form/Input';
 
 interface RaceDetailsEdit {
-    handleSave: FormEventHandler<HTMLFormElement>;
+    handleSave?: FormEventHandler<HTMLFormElement>;
 }
 
 type State = RootState & { race: RaceEditorInterface };
@@ -37,7 +37,7 @@ export const RaceDetailsEdit = ({ handleSave }: RaceDetailsEdit) => {
                         required={true}
                         type="number"
                         step={0.1}
-                        value={distance}
+                        value={distance/100}
                         handleChange={({ target }) =>
                             dispatch(actions.updateDistance(target.value))
                         }

@@ -14,3 +14,5 @@ export const EventDetails = ({ eventDetails }: EventDetailsProps) => {
         </div>
     )
 }
+
+export default EventDetails

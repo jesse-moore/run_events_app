@@ -1,5 +1,3 @@
-import dayjs from 'dayjs';
-import { useState } from 'react';
 import { EventActionInterface } from '../../types';
 import { DateInput } from './DateInput';
 import { EditContainer } from './EditContainer';
@@ -17,7 +15,6 @@ interface HeroProps {
 }
 
 export const Hero = ({ data, dispatch }: HeroProps) => {
-    const [hover, setHover] = useState(false);
     const { date, name, heroImg, address, city, state } = data;
 
     return (

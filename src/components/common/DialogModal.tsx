@@ -1,4 +1,3 @@
-import { ReactEventHandler } from 'react';
 import { Button } from './Button';
 
 interface ModalProps {
@@ -32,12 +31,12 @@ export function DialogModal({
                         <Button
                             name="Discard Changes"
                             color="red"
-                            onClick={confirmHandler}
+                            onClick={() => confirmHandler}
                         />
                         <Button
                             name="Cancel"
                             color="blue"
-                            onClick={closeHandler}
+                            onClick={() => closeHandler}
                         />
                     </div>
                 </div>

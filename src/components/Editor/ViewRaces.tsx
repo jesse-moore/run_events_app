@@ -70,7 +70,7 @@ const Races = ({ races }: Races) => {
                     >
                         {name && <EventItem title="Name" value={name} />}
                         {distance !== undefined && (
-                            <EventItem title="Distance" value={distance} />
+                            <EventItem title="Distance" value={`${distance/100} miles`} />
                         )}
                         <div
                             className="absolute top-1/2 right-0"

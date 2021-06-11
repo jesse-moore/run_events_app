@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useUserEventByIdLazyQuery } from '../../../lib/generated/graphql-frontend';
-import { useSelector } from 'react-redux';
 
 import { Layout } from '../../../components/Common/Layout';
 import { EditEventDescription } from '../../../components/Editor/EditEventDescription';
@@ -30,8 +29,9 @@ const EditEvent = () => {
     }, [router.query]);
 
     useEffect(() => {
+        if (error) router.push('/app');
         if (!data || loading) return;
-        if ((!data.userEventByID && called) || error) {
+        if (!data.userEventByID && called) {
             router.push('/app');
             return;
         }

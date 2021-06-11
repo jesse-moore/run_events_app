@@ -1,5 +1,3 @@
-import { ReactEventHandler } from 'react';
-
 export interface ButtonProps {
     name: string;
     type?: 'button' | 'submit' | 'reset' | undefined;

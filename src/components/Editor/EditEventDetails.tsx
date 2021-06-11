@@ -4,7 +4,12 @@ import { Button } from '../Common/Button';
 import { DiscardModal } from './DiscardModal';
 import { Input } from '../Form/Input';
 import { EventDetailsState } from '../../types';
-import { useSaveEventDetailsMutation } from '../../lib/generated/graphql-frontend';
+import {
+    useSaveEventDetailsMutation,
+    useCheckSubdomainLazyQuery,
+} from '../../lib/generated/graphql-frontend';
+import { URLInput } from '../Form/URLInput';
+import { convertToURL } from '../../lib/utils/convertToURL';
 
 interface EditEventDetailsProps {
     eventDetails: EventDetailsState;
@@ -21,6 +26,17 @@ interface EventState {
     dateTime: any;
     date: string;
     time: string;
+    slug: string;
+}
+
+interface Errors {
+    name?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    date?: string;
+    time?: string;
+    slug?: string;
 }
 
 export const EditEventDetails = ({
@@ -29,7 +45,10 @@ export const EditEventDetails = ({
     cancelHandler,
 }: EditEventDetailsProps) => {
     const [saveEventDetails] = useSaveEventDetailsMutation();
+    const [checkSubdomain, { data: subdomainData }] =
+        useCheckSubdomainLazyQuery();
     const [formState, setFormState] = useState<EventState>();
+    const [errors, setErrors] = useState<Errors>({});
     const [discardWarning, setDiscardWarning] = useState(false);
 
     useEffect(() => {
@@ -45,10 +64,52 @@ export const EditEventDetails = ({
         setFormState(initialEventState);
     }, []);
 
+    useEffect(() => {
+        if (!subdomainData || !formState) return;
+        const { checkSubdomain } = subdomainData;
+        if (!checkSubdomain) {
+            setErrors((errors) => {
+                return { ...errors, slug: '' };
+            });
+        } else {
+            setErrors((errors) => {
+                return {
+                    ...errors,
+                    slug: `Subdomain already in use "${formState.slug}"`,
+                };
+            });
+        }
+    }, [subdomainData]);
+
+    const handleCheckSubdomain = async () => {
+        if (!formState) return;
+        const { slug } = formState;
+        if (!slug) {
+            setErrors((errors) => {
+                return { ...errors, slug: 'Subdomain is required' };
+            });
+        } else if (formState.slug === eventDetails.slug) {
+            setErrors((errors) => {
+                return { ...errors, slug: '' };
+            });
+        } else {
+            checkSubdomain({
+                variables: {
+                    subdomain: slug,
+                },
+            });
+        }
+    };
+
     const handleChange = ({ target }: { target: HTMLInputElement }) => {
         if (!formState) return;
         const { name, value } = target;
-        setFormState({ ...formState, [name]: value });
+        if (name === 'slug') {
+            const url = convertToURL(value);
+            setFormState({ ...formState, slug: url });
+        } else {
+            setFormState({ ...formState, [name]: value });
+        }
     };
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -72,7 +133,7 @@ export const EditEventDetails = ({
     };
 
     if (!formState) return null;
-    const { name, address, city, state, time, date } = formState;
+    const { name, address, city, state, time, date, slug } = formState;
     return (
         <>
             <form onSubmit={handleSubmit}>
@@ -82,6 +143,15 @@ export const EditEventDetails = ({
                     value={name}
                     handleChange={handleChange}
                     required
+                />
+                <URLInput
+                    required={true}
+                    name="slug"
+                    title="Page URL"
+                    value={slug}
+                    error={errors.slug}
+                    handleChange={handleChange}
+                    handleBlur={handleCheckSubdomain}
                 />
                 <h3>Location</h3>
                 <Input
